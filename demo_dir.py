@@ -1,20 +1,19 @@
-
+from networks.resnet import resnet50
+from sklearn.metrics import average_precision_score, precision_recall_curve, accuracy_score
+from tqdm import tqdm
+from util import save_roc_curve, save_roc_curve_with_threshold
 import argparse
-import os
 import csv
+import numpy as np
+import os
 import torch
+import torch.utils.data
 import torchvision.datasets as datasets
 import torchvision.transforms as transforms
-import torch.utils.data
-import numpy as np
-from sklearn.metrics import average_precision_score, precision_recall_curve, accuracy_score
-
-from networks.resnet import resnet50
-
-from tqdm import tqdm
 
 parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 parser.add_argument('-d','--dir', nargs='+', type=str, default='examples/realfakedir')
+parser.add_argument('-n','--name', nargs='+', type=str, default='blur_jpg_prob0.5')
 parser.add_argument('-m','--model_path', type=str, default='weights/blur_jpg_prob0.5.pth')
 parser.add_argument('-b','--batch_size', type=int, default=32)
 parser.add_argument('-j','--workers', type=int, default=4, help='number of workers')
@@ -76,6 +75,9 @@ with torch.no_grad():
 
 Hs, Ws = np.array(Hs), np.array(Ws)
 y_true, y_pred = np.array(y_true), np.array(y_pred)
+roc_path = 'checkpoints/test/'+ opt.name + '/'
+save_roc_curve(y_true, y_pred, 0, roc_path)
+save_roc_curve_with_threshold(y_true, y_pred, 0, roc_path)
 
 print('Average sizes: [{:2.2f}+/-{:2.2f}] x [{:2.2f}+/-{:2.2f}] = [{:2.2f}+/-{:2.2f} Mpix]'.format(np.mean(Hs), np.std(Hs), np.mean(Ws), np.std(Ws), np.mean(Hs*Ws)/1e6, np.std(Hs*Ws)/1e6))
 print('Num reals: {}, Num fakes: {}'.format(np.sum(1-y_true), np.sum(y_true)))

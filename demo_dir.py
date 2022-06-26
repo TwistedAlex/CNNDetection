@@ -4,6 +4,7 @@ from tqdm import tqdm
 from util import save_roc_curve, save_roc_curve_with_threshold
 import argparse
 import csv
+import pathlib
 import numpy as np
 import os
 import torch
@@ -76,6 +77,7 @@ with torch.no_grad():
 Hs, Ws = np.array(Hs), np.array(Ws)
 y_true, y_pred = np.array(y_true), np.array(y_pred)
 roc_path = 'checkpoints/test/'+ opt.name + '/'
+pathlib.Path(roc_path).mkdir(parents=True, exist_ok=True)
 save_roc_curve(y_true, y_pred, 0, roc_path)
 save_roc_curve_with_threshold(y_true, y_pred, 0, roc_path)
 

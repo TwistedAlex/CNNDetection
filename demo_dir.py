@@ -90,7 +90,7 @@ for data_loader in data_loaders:
       grayscale_cam = cam(input_tensor=data, targets=None)
       for idx in (range(grayscale_cam.shape[0])):
           grayscale_cam = grayscale_cam[idx, :]
-          visualization = show_cam_on_image(data[idx], grayscale_cam, use_rgb=True)
+          visualization = show_cam_on_image(data[idx].cpu().numpy(), grayscale_cam, use_rgb=True)
           if label[idx] in [0]:
               PIL.Image.fromarray(visualization, 'RGB').save(
                   roc_path + "/Neg/{:.7f}".format(y_pred[idx]) + '_' + str(count) + '_gt_' + y_pred + '.png')

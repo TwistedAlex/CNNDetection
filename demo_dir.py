@@ -94,11 +94,11 @@ for data_loader in data_loaders:
             if label[idx] == 0:
                 print('0')
                 PIL.Image.fromarray(visualization, 'RGB').save(
-                    roc_path + "/Neg/{:.7f}".format(y_pred[idx]) + '_' + str(count) + '_gt_' + y_true[idx] + '.png')
+                    roc_path + "/Neg/{:.7f}".format(y_pred[idx]) + '_' + str(count) + '_gt_' + str(y_true[idx]) + '.png')
             if label[idx] == 1:
                 print('1')
                 PIL.Image.fromarray(visualization, 'RGB').save(
-                    roc_path + "/Pos/{:.7f}".format(y_pred[idx]) + '_' + str(count) + '_gt_' + y_true[idx] + '.png')
+                    roc_path + "/Pos/{:.7f}".format(y_pred[idx]) + '_' + str(count) + '_gt_' + str(y_true[idx]) + '.png')
             count += 1
 Hs, Ws = np.array(Hs), np.array(Ws)
 y_true, y_pred = np.array(y_true), np.array(y_pred)

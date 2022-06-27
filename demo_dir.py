@@ -91,6 +91,10 @@ for data_loader in data_loaders:
         for idx in (range(grayscale_cam.shape[0])):
             grayscale_cam = grayscale_cam[idx, :]
             visualization = show_cam_on_image(data[idx].permute([1, 2, 0]).cpu().numpy() / 255, grayscale_cam, use_rgb=True)
+            PIL.Image.fromarray(data[idx].permute([1, 2, 0]).cpu().numpy(), 'RGB').save(
+                roc_path + "/Neg/img.png")
+            PIL.Image.fromarray(grayscale_cam, 'RGB').save(
+                roc_path + "/Neg/heatmap.png")
             if label[idx] == 0:
                 print('0')
                 PIL.Image.fromarray(visualization, 'RGB').save(
@@ -99,6 +103,7 @@ for data_loader in data_loaders:
                 print('1')
                 PIL.Image.fromarray(visualization, 'RGB').save(
                     roc_path + "/Pos/{:.7f}".format(y_pred[idx]) + '_' + str(count) + '_gt_' + str(y_true[idx]) + '.png')
+            exit(0)
             count += 1
 Hs, Ws = np.array(Hs), np.array(Ws)
 y_true, y_pred = np.array(y_true), np.array(y_pred)

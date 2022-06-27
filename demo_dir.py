@@ -90,7 +90,7 @@ for data_loader in data_loaders:
         grayscale_cam = cam(input_tensor=data, targets=None)
         for idx in (range(grayscale_cam.shape[0])):
             grayscale_cam = grayscale_cam[idx, :]
-            visualization = show_cam_on_image(data[idx].cpu().numpy().permute([1, 2, 0]) / 255, grayscale_cam, use_rgb=True)
+            visualization = show_cam_on_image(data[idx].permute([1, 2, 0]).cpu().numpy() / 255, grayscale_cam, use_rgb=True)
             if label[idx] == 0:
                 print('0')
                 PIL.Image.fromarray(visualization, 'RGB').save(

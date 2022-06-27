@@ -1,20 +1,20 @@
-from networks.batch_GAIN_Deepfake import batch_GAIN_Deepfake
 from networks.resnet import resnet50
 from sklearn.metrics import average_precision_score, precision_recall_curve, accuracy_score
-from torchvision.transforms import Normalize
-from torchvision.transforms import Resize
 from tqdm import tqdm
-from util import save_roc_curve, save_roc_curve_with_threshold, show_cam_on_image, denorm
+from util import save_roc_curve, save_roc_curve_with_threshold
 import argparse
 import csv
+import pathlib
 import numpy as np
 import os
-import pathlib
+import PIL.Image
 import torch
 import torch.utils.data
 import torchvision.datasets as datasets
 import torchvision.transforms as transforms
-import PIL.Image
+from pytorch_grad_cam import GradCAM, ScoreCAM, GradCAMPlusPlus, AblationCAM, XGradCAM, EigenCAM, FullGrad
+from pytorch_grad_cam.utils.model_targets import ClassifierOutputTarget
+from pytorch_grad_cam.utils.image import show_cam_on_image
 
 parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 parser.add_argument('-d','--dir', nargs='+', type=str, default='examples/realfakedir')
@@ -27,11 +27,9 @@ parser.add_argument('--use_cpu', action='store_true', help='uses gpu by default,
 parser.add_argument('--size_only', action='store_true', help='only look at sizes of images in dataset')
 
 opt = parser.parse_args()
-
-mean = [0.485, 0.456, 0.406]
-std = [0.229, 0.224, 0.225]
 roc_path = 'checkpoints/test/'+ opt.name + '/'
-pathlib.Path(roc_path).mkdir(parents=True, exist_ok=True)
+pathlib.Path(roc_path+'/Neg/').mkdir(parents=True, exist_ok=True)
+pathlib.Path(roc_path+'/Pos/').mkdir(parents=True, exist_ok=True)
 
 # Load model
 if(not opt.size_only):
@@ -43,16 +41,10 @@ if(not opt.size_only):
   if(not opt.use_cpu):
       model.cuda()
 
-  grad_layer = ["layer4"]
-  num_classes = 1
-  norm = Normalize(mean=mean, std=std)
-  fill_color = norm(torch.tensor([0.4948, 0.3301, 0.16]).view(1, 3, 1, 1)).cuda()
-  model = batch_GAIN_Deepfake(model=model, grad_layer=grad_layer, num_classes=num_classes,
-                              am_pretraining_epochs=10,
-                              ex_pretraining_epochs=15,
-                              fill_color=fill_color,
-                              test_first_before_train=1,
-                              grad_magnitude=1)
+target_layers = [model.layer4[-1]]
+cam = GradCAM(model=model, target_layers=target_layers, use_cuda=True)
+
+
 # Transform
 trans_init = []
 if(opt.crop is not None):
@@ -78,52 +70,34 @@ for dir in opt.dir:
                                           shuffle=False,
                                           num_workers=opt.workers),]
 
-y_true, y_pred = [], []
+y_true, y_pred, cur_y_true, cur_y_pred = [], [], [], []
 Hs, Ws = [], []
-
 count = 0
-
 with torch.no_grad():
   for data_loader in data_loaders:
     for data, label in tqdm(data_loader):
     # for data, label in data_loader:
-
-      print(data.shape)
-      print(label)
       Hs.append(data.shape[2])
       Ws.append(data.shape[3])
 
+      cur_y_true = label.flatten().tolist()
       y_true.extend(label.flatten().tolist())
       if(not opt.size_only):
         if(not opt.use_cpu):
             data = data.cuda()
-
-
-        logits_cl, logits_am, heatmaps, masks, masked_images = model(data, label)
-        cur_y_pred = logits_cl.sigmoid().flatten().tolist()
-        y_pred.extend(cur_y_pred)
-
-        resize = Resize(size=224)
-        for idx in range(data.shape[0]):
-            htm = np.uint8(heatmaps[idx].squeeze().cpu().detach().numpy() * 255)
-            orig = data[idx].permute([2, 0, 1])
-            orig = resize(orig).permute([1, 2, 0])
-            np_orig = orig.cpu().detach().numpy()
-            orig = orig.unsqueeze(0)
-            visualization, heatmap = show_cam_on_image(np_orig, htm, True)
-            viz = torch.from_numpy(visualization).unsqueeze(0)
-            masked_image = denorm(masked_images[idx].detach().squeeze(),
-                                  mean, std)
-            orig_viz = torch.cat((orig, viz, masked_image), 1)
-
-            if label[idx] in [0]:
-                PIL.Image.fromarray(orig_viz[0].cpu().numpy(), 'RGB').save(
-                    roc_path + "/Neg/{:.7f}".format(cur_y_pred[idx].unsqueeze(0)[0][0]) + '_' + str(count) + '_gt_' + str(label[idx]) + '.png')
-            if label[idx] in [1]:
-                PIL.Image.fromarray(orig_viz[0].cpu().numpy(), 'RGB').save(
-                    roc_path + "/Pos/{:.7f}".format(cur_y_pred[idx].unsqueeze(0)[0][0].cpu()) + '_' + str(count) + '_gt_' + str(label[idx]) + '.png')
-            count += 1
-
+        cur_y_pred = model(data).sigmoid().flatten().tolist()
+        y_pred.extend(model(data).sigmoid().flatten().tolist())
+      grayscale_cam = cam(input_tensor=data, targets=label)
+      for idx in (range(grayscale_cam.shape[0])):
+          grayscale_cam = grayscale_cam[idx, :]
+          visualization = show_cam_on_image(data[idx], grayscale_cam, use_rgb=True)
+          if label[idx] in [0]:
+              PIL.Image.fromarray(visualization, 'RGB').save(
+                  roc_path + "/Neg/{:.7f}".format(y_pred[idx]) + '_' + str(count) + '_gt_' + y_pred + '.png')
+          if label[idx] in [1]:
+              PIL.Image.fromarray(visualization, 'RGB').save(
+                  roc_path + "/Pos/{:.7f}".format(y_pred[idx]) + '_' + str(count) + '_gt_' + y_pred + '.png')
+          count += 1
 Hs, Ws = np.array(Hs), np.array(Ws)
 y_true, y_pred = np.array(y_true), np.array(y_pred)
 

@@ -97,10 +97,11 @@ with torch.no_grad():
       if(not opt.size_only):
         if(not opt.use_cpu):
             data = data.cuda()
-        cur_y_pred = model(data).sigmoid().flatten().tolist()
-        y_pred.extend(cur_y_pred)
+        
 
         logits_cl, logits_am, heatmaps, masks, masked_images = deepfake_model(data, label)
+        cur_y_pred = logits_cl.sigmoid().flatten().tolist()
+        y_pred.extend(cur_y_pred)
 
         resize = Resize(size=224)
         for idx in range(data.shape[0]):

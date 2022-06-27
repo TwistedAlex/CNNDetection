@@ -4,6 +4,7 @@ import numpy as np
 import os
 import sklearn.metrics as metrics
 import torch
+import cv2
 
 
 def mkdirs(paths):
@@ -88,3 +89,18 @@ def roc_curve(labels, preds, thresholds_count=10000):
     false_positive_rate.reverse(), true_positive_rate.reverse()
     false_positive_rate, true_positive_rate = np.asarray(false_positive_rate), np.asarray(true_positive_rate)
     return false_positive_rate, true_positive_rate, auc, thresholds
+
+def show_cam_on_image(img: np.ndarray, mask: np.ndarray, without_norm : bool) -> np.ndarray:
+    heatmap = cv2.applyColorMap(np.uint8(mask), cv2.COLORMAP_JET)
+    heatmap = cv2.cvtColor(heatmap, cv2.COLOR_BGR2RGB)
+    if without_norm != True:
+        heatmap = np.float32(heatmap) / 255
+    cam = 0.5 * heatmap + 0.5 * np.float32(img)
+    cam = cam / np.max(cam)
+    return np.uint8(255 * cam), heatmap
+
+
+def denorm(tensor, mean, std):
+    for t, m, s in zip(tensor, mean, std):
+        t.mul_(s).add_(m)
+    return tensor

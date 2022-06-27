@@ -77,29 +77,29 @@ count = 0
 for data_loader in data_loaders:
     for data, label in tqdm(data_loader):
     # for data, label in data_loader:
-      Hs.append(data.shape[2])
-      Ws.append(data.shape[3])
+        Hs.append(data.shape[2])
+        Ws.append(data.shape[3])
 
-      cur_y_true = label.flatten().tolist()
-      y_true.extend(label.flatten().tolist())
-      if(not opt.size_only):
-        if(not opt.use_cpu):
-            data = data.cuda()
-        cur_y_pred = model(data).sigmoid().flatten().tolist()
-        y_pred.extend(model(data).sigmoid().flatten().tolist())
-      grayscale_cam = cam(input_tensor=data, targets=None)
-      for idx in (range(grayscale_cam.shape[0])):
-          grayscale_cam = grayscale_cam[idx, :]
-          visualization = show_cam_on_image(data[idx].cpu().numpy().permute([1, 2, 0] / 255, grayscale_cam, use_rgb=True)
-          if label[idx] == 0:
-              print('0')
-              PIL.Image.fromarray(visualization, 'RGB').save(
-                  roc_path + "/Neg/{:.7f}".format(y_pred[idx]) + '_' + str(count) + '_gt_' + y_pred + '.png')
-          if label[idx] == 1:
-              print('1')
-              PIL.Image.fromarray(visualization, 'RGB').save(
-                  roc_path + "/Pos/{:.7f}".format(y_pred[idx]) + '_' + str(count) + '_gt_' + y_pred + '.png')
-          count += 1
+        cur_y_true = label.flatten().tolist()
+        y_true.extend(label.flatten().tolist())
+        if(not opt.size_only):
+            if(not opt.use_cpu):
+                data = data.cuda()
+            cur_y_pred = model(data).sigmoid().flatten().tolist()
+            y_pred.extend(model(data).sigmoid().flatten().tolist())
+        grayscale_cam = cam(input_tensor=data, targets=None)
+        for idx in (range(grayscale_cam.shape[0])):
+            grayscale_cam = grayscale_cam[idx, :]
+            visualization = show_cam_on_image(data[idx].cpu().numpy().permute([1, 2, 0]) / 255, grayscale_cam, use_rgb=True)
+            if label[idx] == 0:
+                print('0')
+                PIL.Image.fromarray(visualization, 'RGB').save(
+                    roc_path + "/Neg/{:.7f}".format(y_pred[idx]) + '_' + str(count) + '_gt_' + y_pred + '.png')
+            if label[idx] == 1:
+                print('1')
+                PIL.Image.fromarray(visualization, 'RGB').save(
+                    roc_path + "/Pos/{:.7f}".format(y_pred[idx]) + '_' + str(count) + '_gt_' + y_pred + '.png')
+            count += 1
 Hs, Ws = np.array(Hs), np.array(Ws)
 y_true, y_pred = np.array(y_true), np.array(y_pred)
 

@@ -90,11 +90,14 @@ for data_loader in data_loaders:
         grayscale_cam = cam(input_tensor=data, targets=None)
         for idx in (range(grayscale_cam.shape[0])):
             grayscale_cam = grayscale_cam[idx, :]
-            visualization = show_cam_on_image(data[idx].permute([1, 2, 0]).cpu().numpy() / 255, grayscale_cam, use_rgb=True)
+            print(data[idx].shape)
+            visualization = show_cam_on_image(np.float32(data[idx].permute([1, 2, 0]).cpu().numpy()) / 255, grayscale_cam, use_rgb=True)
             PIL.Image.fromarray(data[idx].permute([1, 2, 0]).cpu().numpy(), 'RGB').save(
                 roc_path + "/Neg/img.png")
             PIL.Image.fromarray(grayscale_cam, 'RGB').save(
                 roc_path + "/Neg/heatmap.png")
+            PIL.Image.fromarray(data[idx].cpu().numpy(), 'RGB').save(
+                roc_path + "/Neg/img2.png")
             if label[idx] == 0:
                 print('0')
                 PIL.Image.fromarray(visualization, 'RGB').save(

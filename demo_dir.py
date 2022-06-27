@@ -73,8 +73,8 @@ for dir in opt.dir:
 y_true, y_pred, cur_y_true, cur_y_pred = [], [], [], []
 Hs, Ws = [], []
 count = 0
-with torch.no_grad():
-  for data_loader in data_loaders:
+
+for data_loader in data_loaders:
     for data, label in tqdm(data_loader):
     # for data, label in data_loader:
       Hs.append(data.shape[2])

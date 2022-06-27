@@ -87,7 +87,7 @@ with torch.no_grad():
             data = data.cuda()
         cur_y_pred = model(data).sigmoid().flatten().tolist()
         y_pred.extend(model(data).sigmoid().flatten().tolist())
-      grayscale_cam = cam(input_tensor=data, targets=label)
+      grayscale_cam = cam(input_tensor=data, targets=None)
       for idx in (range(grayscale_cam.shape[0])):
           grayscale_cam = grayscale_cam[idx, :]
           visualization = show_cam_on_image(data[idx], grayscale_cam, use_rgb=True)

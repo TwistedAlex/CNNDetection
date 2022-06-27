@@ -88,6 +88,7 @@ for data_loader in data_loaders:
             cur_y_pred = model(data).sigmoid().flatten().tolist()
             y_pred.extend(model(data).sigmoid().flatten().tolist())
         grayscale_cam = cam(input_tensor=data, targets=None)
+        print(data.shape)
         for idx in (range(grayscale_cam.shape[0])):
             grayscale_cam = grayscale_cam[idx, :]
             print(data[idx].shape)
@@ -97,6 +98,8 @@ for data_loader in data_loaders:
             PIL.Image.fromarray(grayscale_cam, 'RGB').save(
                 roc_path + "/Neg/heatmap.png")
             PIL.Image.fromarray(data[idx].cpu().numpy(), 'RGB').save(
+                roc_path + "/Neg/img2.png")
+            PIL.Image.fromarray(np.float32(data[idx].permute([1, 2, 0]).cpu().numpy()) / 255, 'RGB').save(
                 roc_path + "/Neg/img2.png")
             if label[idx] == 0:
                 print('0')

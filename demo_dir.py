@@ -91,10 +91,12 @@ for data_loader in data_loaders:
       for idx in (range(grayscale_cam.shape[0])):
           grayscale_cam = grayscale_cam[idx, :]
           visualization = show_cam_on_image(data[idx].cpu().numpy().permute([1, 2, 0] / 255, grayscale_cam, use_rgb=True)
-          if label[idx] in [0]:
+          if label[idx] == 0:
+              print('0')
               PIL.Image.fromarray(visualization, 'RGB').save(
                   roc_path + "/Neg/{:.7f}".format(y_pred[idx]) + '_' + str(count) + '_gt_' + y_pred + '.png')
-          if label[idx] in [1]:
+          if label[idx] == 1:
+              print('1')
               PIL.Image.fromarray(visualization, 'RGB').save(
                   roc_path + "/Pos/{:.7f}".format(y_pred[idx]) + '_' + str(count) + '_gt_' + y_pred + '.png')
           count += 1

@@ -103,7 +103,7 @@ with torch.no_grad():
         logits_cl, logits_am, heatmaps, masks, masked_images = deepfake_model(data, label)
 
         resize = Resize(size=224)
-        for idx in data.shape[0]:
+        for idx in range(data.shape[0]):
             htm = np.uint8(heatmaps[idx].squeeze().cpu().detach().numpy() * 255)
             orig = data[idx].permute([2, 0, 1])
             orig = resize(orig).permute([1, 2, 0])
@@ -115,10 +115,10 @@ with torch.no_grad():
                                   mean, std)
             orig_viz = torch.cat((orig, viz, masked_image), 1)
 
-            if label[idx] in ['Neg']:
+            if label[idx] in [0]:
                 PIL.Image.fromarray(orig_viz[0].cpu().numpy(), 'RGB').save(
                     roc_path + "/Neg/{:.7f}".format(cur_y_pred[idx].unsqueeze(0)[0][0]) + '_' + str(count) + '_gt_' + str(label[idx]) + '.png')
-            else:
+            if label[idx] in [1]:
                 PIL.Image.fromarray(orig_viz[0].cpu().numpy(), 'RGB').save(
                     roc_path + "/Pos/{:.7f}".format(cur_y_pred[idx].unsqueeze(0)[0][0].cpu()) + '_' + str(count) + '_gt_' + str(label[idx]) + '.png')
             count += 1

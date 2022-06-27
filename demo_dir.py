@@ -47,7 +47,7 @@ if(not opt.size_only):
   num_classes = 1
   norm = Normalize(mean=mean, std=std)
   fill_color = norm(torch.tensor([0.4948, 0.3301, 0.16]).view(1, 3, 1, 1)).cuda()
-  deepfake_model = batch_GAIN_Deepfake(model=model, grad_layer=grad_layer, num_classes=num_classes,
+  model = batch_GAIN_Deepfake(model=model, grad_layer=grad_layer, num_classes=num_classes,
                               am_pretraining_epochs=10,
                               ex_pretraining_epochs=15,
                               fill_color=fill_color,
@@ -97,9 +97,9 @@ with torch.no_grad():
       if(not opt.size_only):
         if(not opt.use_cpu):
             data = data.cuda()
-        
 
-        logits_cl, logits_am, heatmaps, masks, masked_images = deepfake_model(data, label)
+
+        logits_cl, logits_am, heatmaps, masks, masked_images = model(data, label)
         cur_y_pred = logits_cl.sigmoid().flatten().tolist()
         y_pred.extend(cur_y_pred)
 

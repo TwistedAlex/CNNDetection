@@ -1,17 +1,20 @@
 from networks.batch_GAIN_Deepfake import batch_GAIN_Deepfake
-import argparse
-import os
-import csv
-import torch
-import torchvision.datasets as datasets
-import torchvision.transforms as transforms
-import torch.utils.data
-import numpy as np
+from networks.resnet import resnet50
 from sklearn.metrics import average_precision_score, precision_recall_curve, accuracy_score
 from torchvision.transforms import Normalize
-from networks.resnet import resnet50
-import pathlib
+from torchvision.transforms import Resize
 from tqdm import tqdm
+from util import show_cam_on_image, denorm
+import PIL.Image
+import argparse
+import csv
+import numpy as np
+import os
+import pathlib
+import torch
+import torch.utils.data
+import torchvision.datasets as datasets
+import torchvision.transforms as transforms
 
 parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 parser.add_argument('-d','--dir', nargs='+', type=str, default='examples/realfakedir')
@@ -31,7 +34,7 @@ pathlib.Path(roc_path+'/Pos/').mkdir(parents=True, exist_ok=True)
 mean = [0.485, 0.456, 0.406]
 std = [0.229, 0.224, 0.225]
 norm = Normalize(mean=mean, std=std)
-
+resize = Resize(size=224)
 # Load model
 if(not opt.size_only):
     model = resnet50(num_classes=1)
@@ -78,6 +81,7 @@ for dir in opt.dir:
 
 y_true, y_pred = [], []
 Hs, Ws = [], []
+count = 0
 
 for data_loader in data_loaders:
     for data, label in tqdm(data_loader):
@@ -95,7 +99,33 @@ for data_loader in data_loaders:
             logits_cl, logits_am, heatmaps, masks, masked_images =  model(data, labels)
 
             y_pred.extend(logits_cl.sigmoid().flatten().tolist())
-            exit(0)
+
+            for idx in (opt.batch_size):
+                htm = np.uint8(heatmaps[0].squeeze().cpu().detach().numpy() * 255)
+                resize = Resize(size=224)
+                orig = data[0].permute([2, 0, 1])
+                orig = resize(orig).permute([1, 2, 0])
+                np_orig = orig.cpu().detach().numpy()
+                visualization, heatmap = show_cam_on_image(np_orig, htm, True)
+                viz = torch.from_numpy(visualization).unsqueeze(0)
+                orig = orig.unsqueeze(0)
+                masked_image = denorm(masked_images[0].detach().squeeze(),
+                                      mean, std)
+                masked_image = (masked_image.squeeze().permute([1, 2, 0]).cpu().detach().numpy() * 255).round().astype(
+                    np.uint8)
+                masked_image = torch.from_numpy(masked_image).unsqueeze(0)
+                orig_viz = torch.cat((orig, viz, masked_image), 1)
+                if label[idx] == 0:
+                    print('0')
+                    PIL.Image.fromarray(orig_viz[0], 'RGB').save(
+                        roc_path + "/Neg/{:.7f}".format(y_pred[count]) + '_' + str(count) + '_gt_' + str(y_true[count]) + '.png')
+                if label[idx] == 1:
+                    print('1')
+                    PIL.Image.fromarray(orig_viz[0], 'RGB').save(
+                        roc_path + "/Pos/{:.7f}".format(y_pred[count]) + '_' + str(count) + '_gt_' + str(y_true[count]) + '.png')
+                count += 1
+                exit(0)
+
 Hs, Ws = np.array(Hs), np.array(Ws)
 y_true, y_pred = np.array(y_true), np.array(y_pred)
 

@@ -57,6 +57,10 @@ trans = transforms.Compose(trans_init + [
     transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
 ])
 
+trans = transforms.Compose([
+    transforms.ToTensor()
+])
+
 # Dataset loader
 if(type(opt.dir)==str):
   opt.dir = [opt.dir,]
@@ -97,8 +101,6 @@ for data_loader in data_loaders:
                 roc_path + "/Neg/img.png")
             PIL.Image.fromarray(grayscale_cam, 'RGB').save(
                 roc_path + "/Neg/heatmap.png")
-            PIL.Image.fromarray(data[idx].cpu().numpy(), 'RGB').save(
-                roc_path + "/Neg/img2.png")
             PIL.Image.fromarray(np.float32(data[idx].permute([1, 2, 0]).cpu().numpy()) / 255, 'RGB').save(
                 roc_path + "/Neg/img3.png")
             if label[idx] == 0:

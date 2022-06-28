@@ -1,4 +1,4 @@
-from networks import batch_GAIN_Deepfake
+from networks.batch_GAIN_Deepfake import batch_GAIN_Deepfake
 import argparse
 import os
 import csv
@@ -28,13 +28,14 @@ device = torch.device('cuda:'+str(0))
 roc_path = 'checkpoints/test/'+ opt.name + '/'
 pathlib.Path(roc_path+'/Neg/').mkdir(parents=True, exist_ok=True)
 pathlib.Path(roc_path+'/Pos/').mkdir(parents=True, exist_ok=True)
+mean = [0.485, 0.456, 0.406]
+std = [0.229, 0.224, 0.225]
+norm = Normalize(mean=mean, std=std)
+
 # Load model
 if(not opt.size_only):
     model = resnet50(num_classes=1)
 
-    mean = [0.485, 0.456, 0.406]
-    std = [0.229, 0.224, 0.225]
-    norm = Normalize(mean=mean, std=std)
     fill_color = norm(torch.tensor([0.4948,0.3301,0.16]).view(1, 3, 1, 1)).cuda()
     grad_layer = ["layer4"]
     if(opt.model_path is not None):

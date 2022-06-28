@@ -100,7 +100,7 @@ for data_loader in data_loaders:
 
             y_pred.extend(logits_cl.sigmoid().flatten().tolist())
 
-            for idx in (opt.batch_size):
+            for idx in (range(opt.batch_size)):
                 htm = np.uint8(heatmaps[0].squeeze().cpu().detach().numpy() * 255)
                 resize = Resize(size=224)
                 orig = data[0].permute([2, 0, 1])

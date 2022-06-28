@@ -100,7 +100,7 @@ for data_loader in data_loaders:
             PIL.Image.fromarray(data[idx].cpu().numpy(), 'RGB').save(
                 roc_path + "/Neg/img2.png")
             PIL.Image.fromarray(np.float32(data[idx].permute([1, 2, 0]).cpu().numpy()) / 255, 'RGB').save(
-                roc_path + "/Neg/img2.png")
+                roc_path + "/Neg/img3.png")
             if label[idx] == 0:
                 print('0')
                 PIL.Image.fromarray(visualization, 'RGB').save(

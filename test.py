@@ -10,11 +10,12 @@ import numpy as np
 from sklearn.metrics import average_precision_score, precision_recall_curve, accuracy_score
 from torchvision.transforms import Normalize
 from networks.resnet import resnet50
-
+import pathlib
 from tqdm import tqdm
 
 parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 parser.add_argument('-d','--dir', nargs='+', type=str, default='examples/realfakedir')
+parser.add_argument('-n','--name', type=str, default='blur_jpg_prob0.5')
 parser.add_argument('-m','--model_path', type=str, default='weights/blur_jpg_prob0.5.pth')
 parser.add_argument('-b','--batch_size', type=int, default=32)
 parser.add_argument('-j','--workers', type=int, default=4, help='number of workers')
@@ -24,6 +25,9 @@ parser.add_argument('--size_only', action='store_true', help='only look at sizes
 
 opt = parser.parse_args()
 device = torch.device('cuda:'+str(0))
+roc_path = 'checkpoints/test/'+ opt.name + '/'
+pathlib.Path(roc_path+'/Neg/').mkdir(parents=True, exist_ok=True)
+pathlib.Path(roc_path+'/Pos/').mkdir(parents=True, exist_ok=True)
 # Load model
 if(not opt.size_only):
     model = resnet50(num_classes=1)

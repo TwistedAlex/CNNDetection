@@ -110,12 +110,12 @@ for data_loader in data_loaders:
 
             for idx in (range(opt.batch_size)):
                 htm = np.uint8(heatmaps[idx][0].squeeze().cpu().detach().numpy() * 255)
-                orig = data[idx].permute([2, 0, 1])
-                orig = resize(orig).permute([1, 2, 0])
+                orig = data[idx] # data[idx] target [1024, 1024, 3]
+                orig = orig.permute([1, 2, 0])
                 np_orig = orig.cpu().detach().numpy()
                 print("np_orig, htm")
-                print(np_orig.shape) # 224,224,3 now 256,256,3
-                print(htm.shape) # 224, 224 now 224,19114,256
+                print(np_orig.shape) # 224,224,3 now 224, 16725, 224
+                print(htm.shape) # 224, 224 now 224, 224
                 visualization, heatmap = show_cam_on_image(np_orig, htm, True)
                 print("visualization, heatmap")
                 print(visualization.shape)

@@ -73,11 +73,15 @@ print('Loading [%i] datasets'%len(opt.dir))
 data_loaders = []
 for dir in opt.dir:
     dataset = datasets.ImageFolder(dir, transform=trans)
+    print(type(dataset))
+    print(len(dataset))
     data_loaders+=[torch.utils.data.DataLoader(dataset,
                                           batch_size=opt.batch_size,
                                           shuffle=False,
                                           num_workers=opt.workers),]
 
+    PIL.Image.fromarray(dataset[0].cpu().numpy(), 'RGB').save(
+        roc_path + "/firstEle_dataset.png")
 y_true, y_pred = [], []
 Hs, Ws = [], []
 count = 0

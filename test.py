@@ -120,7 +120,7 @@ for data_loader in data_loaders:
                 print("visualization, heatmap")
                 print(visualization.shape)
                 print(heatmap.shape)
-                viz = torch.from_numpy(visualization).unsqueeze(0)
+                viz = torch.from_numpy(visualization).unsqueeze(0).to(device)
                 orig = orig.unsqueeze(0)
                 print("viz, orig")
                 print(viz.shape)

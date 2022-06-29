@@ -129,7 +129,7 @@ for data_loader in data_loaders:
                                       mean, std)
                 masked_image = (masked_image.squeeze().permute([1, 2, 0]).cpu().detach().numpy() * 255).round().astype(
                     np.uint8)
-                masked_image = torch.from_numpy(masked_image).unsqueeze(0)
+                masked_image = torch.from_numpy(masked_image).unsqueeze(0).to(device)
                 orig_viz = torch.cat((orig, viz, masked_image), 1)
                 if label[idx] == 0:
                     print('0')

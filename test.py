@@ -141,7 +141,7 @@ for data_loader in data_loaders:
                     roc_path + "/Neg/heatmap0_totensor.png")
                 PIL.Image.fromarray((heatmap * 255).astype('uint8'), 'RGB').save(
                     roc_path + "/Neg/heatmap0.png")
-                orig = orig.unsqueeze(0)
+                orig = np_orig.unsqueeze(0)
                 print("viz, orig")
                 print(viz.shape) # [224,224,3]
                 print(orig.shape)
@@ -151,7 +151,7 @@ for data_loader in data_loaders:
                 print(label[idx])
                 if label[idx] == 0:
                     print('0')
-                    PIL.Image.fromarray(orig_viz.cpu().numpy(), 'RGB').save(
+                    PIL.Image.fromarray(orig_viz[0].cpu().numpy(), 'RGB').save(
                         roc_path + "/Neg/{:.7f}".format(y_pred[count]) + '_' + str(count) + '_gt_' + str(y_true[count]) + '.png')
                 if label[idx] == 1:
                     print('1')

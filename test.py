@@ -62,7 +62,7 @@ if(opt.crop is not None):
 else:
     print('Not cropping')
 trans = transforms.Compose(trans_init + [
-    transforms.ToTensor(),
+    transforms.ToTensor(), # (H x W x C) to (C x H x W), [0,255] to [0.0, 1.0]torch.FloatTensor
     # transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
 ])
 
@@ -73,6 +73,7 @@ if(type(opt.dir)==str):
 print('Loading [%i] datasets'%len(opt.dir))
 data_loaders = []
 for dir in opt.dir:
+    print(dir)
     dataset = datasets.ImageFolder(dir, transform=ToTensor())
     print(type(dataset))
     print(len(dataset))
@@ -85,7 +86,7 @@ for dir in opt.dir:
                                           shuffle=False,
                                           num_workers=opt.workers),]
 
-    PIL.Image.fromarray(dataset[1][0].permute([1, 2, 0]).cpu().numpy(), 'RGB').save(
+    PIL.Image.fromarray((dataset[1][0].permute([1, 2, 0]).cpu().numpy() * 255).astype('uint8'), 'RGB').save(
         roc_path + "/firstEle_dataset.png")
 y_true, y_pred = [], []
 Hs, Ws = [], []

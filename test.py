@@ -3,13 +3,14 @@ from networks.resnet import resnet50
 from sklearn.metrics import average_precision_score, precision_recall_curve, accuracy_score
 from torchvision.transforms import Normalize
 from torchvision.transforms import Resize
+from torchvision.transforms import ToTensor
 from tqdm import tqdm
-from util import show_cam_on_image, denorm
+from util import save_roc_curve, save_roc_curve_with_threshold
+from util import show_cam_on_image, denorm, select_clo_far_heatmaps
 import PIL.Image
 import argparse
 import csv
 import numpy as np
-from torchvision.transforms import ToTensor
 import os
 import pathlib
 import torch
@@ -29,9 +30,15 @@ parser.add_argument('--size_only', action='store_true', help='only look at sizes
 
 opt = parser.parse_args()
 device = torch.device('cuda:'+str(0))
+heatmap_home_dir = "/server_data/image-research/"
 roc_path = 'checkpoints/test/'+ opt.name + '/'
+psi_05_input_path_heatmap = roc_path + '/test_heatmap/psi0.5/'
+psi_1_input_path_heatmap = roc_path + '/test_heatmap/psi1/'
+
 pathlib.Path(roc_path+'/Neg/').mkdir(parents=True, exist_ok=True)
 pathlib.Path(roc_path+'/Pos/').mkdir(parents=True, exist_ok=True)
+pathlib.Path(psi_1_input_path_heatmap+'/Neg/').mkdir(parents=True, exist_ok=True)
+pathlib.Path(psi_1_input_path_heatmap+'/Pos/').mkdir(parents=True, exist_ok=True)
 mean = [0.485, 0.456, 0.406]
 std = [0.229, 0.224, 0.225]
 norm = Normalize(mean=mean, std=std)
@@ -63,7 +70,7 @@ else:
     print('Not cropping')
 trans = transforms.Compose(trans_init + [
     transforms.ToTensor(), # (H x W x C) to (C x H x W), [0,255] to [0.0, 1.0]torch.FloatTensor
-    # transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+    transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
 ])
 
 # Dataset loader
@@ -154,13 +161,18 @@ for data_loader in data_loaders:
                     PIL.Image.fromarray(viz[0].cpu().numpy(), 'RGB').save(
                         roc_path + "/Neg/{:.7f}".format(y_pred[count]) + '_' + str(count) + '_gt_' + str(y_true[count]) + '.png')
                 if label[idx] == 1:
-                    PIL.Image.fromarray(viz.cpu().numpy(), 'RGB').save(
+                    PIL.Image.fromarray(viz[0].cpu().numpy(), 'RGB').save(
                         roc_path + "/Pos/{:.7f}".format(y_pred[count]) + '_' + str(count) + '_gt_' + str(y_true[count]) + '.png')
                 count += 1
 
 Hs, Ws = np.array(Hs), np.array(Ws)
 y_true, y_pred = np.array(y_true), np.array(y_pred)
 
+# save_roc_curve(y_true, y_pred, 0, roc_path)
+# save_roc_curve_with_threshold(y_true, y_pred, 0, roc_path)
+#
+# select_clo_far_heatmaps(heatmap_home_dir, psi_05_input_path_heatmap, args.log_name, "psi_0.5")
+# select_clo_far_heatmaps(heatmap_home_dir, psi_1_input_path_heatmap, args.log_name, "psi_1")
 print('Average sizes: [{:2.2f}+/-{:2.2f}] x [{:2.2f}+/-{:2.2f}] = [{:2.2f}+/-{:2.2f} Mpix]'.format(np.mean(Hs), np.std(Hs), np.mean(Ws), np.std(Ws), np.mean(Hs*Ws)/1e6, np.std(Hs*Ws)/1e6))
 print('Num reals: {}, Num fakes: {}'.format(np.sum(1-y_true), np.sum(y_true)))
 

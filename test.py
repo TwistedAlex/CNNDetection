@@ -141,10 +141,11 @@ for data_loader in data_loaders:
                     roc_path + "/Neg/heatmap0_totensor.png")
                 PIL.Image.fromarray((heatmap * 255).astype('uint8'), 'RGB').save(
                     roc_path + "/Neg/heatmap0.png")
-                orig = np_orig.unsqueeze(0)
+                orig = orig.unsqueeze(0)
                 print("viz, orig")
                 print(viz.shape) # [224,224,3]
                 print(orig.shape)
+                orig = orig * 255
                 PIL.Image.fromarray(orig[0].cpu().numpy(), 'RGB').save(
                     roc_path + "/Neg/orig.png")
                 orig_viz = torch.cat((orig, viz), 1)

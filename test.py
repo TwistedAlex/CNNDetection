@@ -75,13 +75,16 @@ for dir in opt.dir:
     dataset = datasets.ImageFolder(dir, transform=trans)
     print(type(dataset))
     print(len(dataset))
-    print(dataset[0].shape)
+    print(len(dataset[0]))
+    print(dataset[0][0])
+    print(dataset[0][0].shape)
+    print(dataset[0][1])
     data_loaders+=[torch.utils.data.DataLoader(dataset,
                                           batch_size=opt.batch_size,
                                           shuffle=False,
                                           num_workers=opt.workers),]
 
-    PIL.Image.fromarray(dataset[0].cpu().numpy(), 'RGB').save(
+    PIL.Image.fromarray(dataset[0][0].cpu().numpy(), 'RGB').save(
         roc_path + "/firstEle_dataset.png")
 y_true, y_pred = [], []
 Hs, Ws = [], []

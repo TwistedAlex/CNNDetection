@@ -9,6 +9,7 @@ import PIL.Image
 import argparse
 import csv
 import numpy as np
+from torchvision.transforms import ToTensor
 import os
 import pathlib
 import torch
@@ -72,7 +73,7 @@ if(type(opt.dir)==str):
 print('Loading [%i] datasets'%len(opt.dir))
 data_loaders = []
 for dir in opt.dir:
-    dataset = datasets.ImageFolder(dir, transform=trans)
+    dataset = datasets.ImageFolder(dir, transform=ToTensor())
     print(type(dataset))
     print(len(dataset))
     print(len(dataset[0]))

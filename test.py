@@ -137,9 +137,9 @@ for data_loader in data_loaders:
                     roc_path + "/Neg/viz0_totensor.png")
                 PIL.Image.fromarray((viz[0].cpu().numpy() * 255).astype('uint8'), 'RGB').save(
                     roc_path + "/Neg/viz0.png")
-                PIL.Image.fromarray(heatmap.cpu().numpy(), 'RGB').save(
+                PIL.Image.fromarray(heatmap, 'RGB').save(
                     roc_path + "/Neg/heatmap0_totensor.png")
-                PIL.Image.fromarray((heatmap.cpu().numpy() * 255).astype('uint8'), 'RGB').save(
+                PIL.Image.fromarray((heatmap * 255).astype('uint8'), 'RGB').save(
                     roc_path + "/Neg/heatmap0.png")
                 orig = orig.unsqueeze(0)
                 print("viz, orig")

@@ -145,7 +145,7 @@ for data_loader in data_loaders:
                 print("viz, orig")
                 print(viz.shape) # [224,224,3]
                 print(orig.shape)
-                orig = orig.float() * 255
+                orig = orig.float()
                 PIL.Image.fromarray(orig[0].cpu().numpy(), 'RGB').save(
                     roc_path + "/Neg/orig.png")
                 orig_viz = torch.cat((orig, viz), 1)

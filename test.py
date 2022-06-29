@@ -73,21 +73,21 @@ if(type(opt.dir)==str):
 print('Loading [%i] datasets'%len(opt.dir))
 data_loaders = []
 for dir in opt.dir:
-    print(dir)
+    print(f'Test path: {dir}')
     dataset = datasets.ImageFolder(dir, transform=ToTensor())
-    print(type(dataset))
-    print(len(dataset))
-    print(len(dataset[0]))
-    print(dataset[0][0])
-    print(dataset[0][0].shape)
-    print(dataset[0][1])
+    # print(type(dataset))
+    # print(len(dataset))
+    # print(len(dataset[0]))
+    # print(dataset[0][0])
+    # print(dataset[0][0].shape)
+    # print(dataset[0][1])
     data_loaders+=[torch.utils.data.DataLoader(dataset,
                                           batch_size=opt.batch_size,
                                           shuffle=False,
                                           num_workers=opt.workers),]
 
-    PIL.Image.fromarray((dataset[1][0].permute([1, 2, 0]).cpu().numpy() * 255).astype('uint8'), 'RGB').save(
-        roc_path + "/Neg/firstEle_dataset.png")
+    # PIL.Image.fromarray((dataset[1][0].permute([1, 2, 0]).cpu().numpy() * 255).astype('uint8'), 'RGB').save(
+    #     roc_path + "/Neg/firstEle_dataset.png")
 y_true, y_pred = [], []
 Hs, Ws = [], []
 count = 0
@@ -106,16 +106,16 @@ for data_loader in data_loaders:
                 data = data.cuda()
 
             logits_cl, logits_am, heatmaps, masks, masked_images =  model(data, labels)
-            print("debug**********")
-            print(data)  # [[ [[],[]..[]], [[],[]...[]] ]]
-            print(labels) # tensor([1], device='cuda:0')
-            print(data.shape) # torch.size([1, 3, 224, 224])
-            print(labels.shape) # torch.size([1])
-            print(logits_cl.shape) # [1, 2]
-            print(logits_am.shape) # [1, 2]
-            print(heatmaps.shape) # [1, 1, 224, 224]
-            print(masks.shape) # [1, 1, 224, 224]
-            print(masked_images.shape) # [1, 3, 224, 224]
+            # print("debug**********")
+            # print(data)  # [[ [[],[]..[]], [[],[]...[]] ]]
+            # print(labels) # tensor([1], device='cuda:0')
+            # print(data.shape) # torch.size([1, 3, 224, 224])
+            # print(labels.shape) # torch.size([1])
+            # print(logits_cl.shape) # [1, 2]
+            # print(logits_am.shape) # [1, 2]
+            # print(heatmaps.shape) # [1, 1, 224, 224]
+            # print(masks.shape) # [1, 1, 224, 224]
+            # print(masked_images.shape) # [1, 3, 224, 224]
             y_pred.extend(logits_cl.sigmoid().flatten().tolist())
 
             for idx in (range(opt.batch_size)):
@@ -123,40 +123,38 @@ for data_loader in data_loaders:
                 orig = data[idx] # data[idx] target [1024, 1024, 3]
                 orig = orig.permute([1, 2, 0])
                 np_orig = np.uint8(orig.cpu().detach().numpy() * 255)
-                PIL.Image.fromarray(np_orig, 'RGB').save(
-                    roc_path + "/Neg/firstEle_dataset.png")
-                print("np_orig, htm")
-                print(np_orig.shape) # 224,224,3 now 224, 16725, 224
-                print(htm.shape) # 224, 224 now 224, 224
+                # PIL.Image.fromarray(np_orig, 'RGB').save(
+                #     roc_path + "/Neg/firstEle_dataset.png")
+                # print("np_orig, htm")
+                # print(np_orig.shape) # 224,224,3 now 224, 16725, 224
+                # print(htm.shape) # 224, 224 now 224, 224
                 visualization, heatmap = show_cam_on_image(np_orig, htm, True)
-                print("visualization, heatmap")
-                print(visualization.shape)
-                print(heatmap.shape)
+                # print("visualization, heatmap")
+                # print(visualization.shape)
+                # print(heatmap.shape)
                 viz = torch.from_numpy(visualization).unsqueeze(0).to(device)
-                PIL.Image.fromarray(viz[0].cpu().numpy(), 'RGB').save(
-                    roc_path + "/Neg/viz0_totensor.png")
-                PIL.Image.fromarray((viz[0].cpu().numpy() * 255).astype('uint8'), 'RGB').save(
-                    roc_path + "/Neg/viz0.png")
-                PIL.Image.fromarray(heatmap, 'RGB').save(
-                    roc_path + "/Neg/heatmap0_totensor.png")
-                PIL.Image.fromarray((heatmap * 255).astype('uint8'), 'RGB').save(
-                    roc_path + "/Neg/heatmap0.png")
-                orig = orig.unsqueeze(0)
-                print("viz, orig")
-                print(viz.shape) # [224,224,3]
-                print(orig.shape)
-                orig = orig.float()
-                PIL.Image.fromarray(orig[0].cpu().numpy(), 'RGB').save(
-                    roc_path + "/Neg/orig.png")
-                orig_viz = torch.cat((orig, viz), 1)
-                print(label[idx])
+                # PIL.Image.fromarray(viz[0].cpu().numpy(), 'RGB').save(
+                #     roc_path + "/Neg/viz0_totensor.png")
+                # PIL.Image.fromarray((viz[0].cpu().numpy() * 255).astype('uint8'), 'RGB').save(
+                #     roc_path + "/Neg/viz0.png")
+                # PIL.Image.fromarray(heatmap, 'RGB').save(
+                #     roc_path + "/Neg/heatmap0_totensor.png")
+                # PIL.Image.fromarray((heatmap * 255).astype('uint8'), 'RGB').save(
+                #     roc_path + "/Neg/heatmap0.png")
+                # orig = orig.unsqueeze(0)
+                # print("viz, orig")
+                # print(viz.shape) # [224,224,3]
+                # print(orig.shape)
+                # orig = orig.float()
+                # PIL.Image.fromarray(orig[0].cpu().numpy(), 'RGB').save(
+                #     roc_path + "/Neg/orig.png")
+                # orig_viz = torch.cat((orig, viz), 1)
+                # print(label[idx])
                 if label[idx] == 0:
-                    print('0')
-                    PIL.Image.fromarray(orig_viz[0].cpu().numpy(), 'RGB').save(
+                    PIL.Image.fromarray(viz[0].cpu().numpy(), 'RGB').save(
                         roc_path + "/Neg/{:.7f}".format(y_pred[count]) + '_' + str(count) + '_gt_' + str(y_true[count]) + '.png')
                 if label[idx] == 1:
-                    print('1')
-                    PIL.Image.fromarray(orig_viz.cpu().numpy(), 'RGB').save(
+                    PIL.Image.fromarray(viz.cpu().numpy(), 'RGB').save(
                         roc_path + "/Pos/{:.7f}".format(y_pred[count]) + '_' + str(count) + '_gt_' + str(y_true[count]) + '.png')
                 count += 1
                 exit(0)

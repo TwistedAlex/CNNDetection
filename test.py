@@ -125,19 +125,20 @@ for data_loader in data_loaders:
                 print("viz, orig")
                 print(viz.shape)
                 print(orig.shape)
-                masked_image = denorm(masked_images[idx].detach().squeeze(),
-                                      mean, std)
-                masked_image = (masked_image.squeeze().permute([1, 2, 0]).cpu().detach().numpy() * 255).round().astype(
-                    np.uint8)
-                masked_image = torch.from_numpy(masked_image).unsqueeze(0).to(device)
-                orig_viz = torch.cat((orig, viz, masked_image), 1)
+                # masked_image = denorm(masked_images[idx].detach().squeeze(),
+                #                       mean, std)
+                # masked_image = (masked_image.squeeze().permute([1, 2, 0]).cpu().detach().numpy() * 255).round().astype(
+                #     np.uint8)
+                # masked_image = torch.from_numpy(masked_image).unsqueeze(0).to(device)
+                # orig_viz = torch.cat((orig, viz, masked_image), 1)
+
                 if label[idx] == 0:
                     print('0')
-                    PIL.Image.fromarray(orig_viz[0], 'RGB').save(
+                    PIL.Image.fromarray(viz[0], 'RGB').save(
                         roc_path + "/Neg/{:.7f}".format(y_pred[count]) + '_' + str(count) + '_gt_' + str(y_true[count]) + '.png')
                 if label[idx] == 1:
                     print('1')
-                    PIL.Image.fromarray(orig_viz[0], 'RGB').save(
+                    PIL.Image.fromarray(viz[0], 'RGB').save(
                         roc_path + "/Pos/{:.7f}".format(y_pred[count]) + '_' + str(count) + '_gt_' + str(y_true[count]) + '.png')
                 count += 1
                 exit(0)

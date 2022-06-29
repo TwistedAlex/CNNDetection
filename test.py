@@ -133,7 +133,7 @@ for data_loader in data_loaders:
                 print(visualization.shape)
                 print(heatmap.shape)
                 viz = torch.from_numpy(visualization).unsqueeze(0).to(device)
-                PIL.Image.fromarray((viz.cpu().numpy() * 255).astype('uint8'), 'RGB').save(
+                PIL.Image.fromarray((viz[0].cpu().numpy() * 255).astype('uint8'), 'RGB').save(
                     roc_path + "/Neg/firstEle_dataset.png")
                 orig = orig.unsqueeze(0)
                 print("viz, orig")

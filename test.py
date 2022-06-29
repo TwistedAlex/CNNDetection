@@ -75,6 +75,7 @@ for dir in opt.dir:
     dataset = datasets.ImageFolder(dir, transform=trans)
     print(type(dataset))
     print(len(dataset))
+    print(dataset[0].shape)
     data_loaders+=[torch.utils.data.DataLoader(dataset,
                                           batch_size=opt.batch_size,
                                           shuffle=False,

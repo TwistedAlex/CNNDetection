@@ -113,8 +113,9 @@ for data_loader in data_loaders:
                 orig = data[idx].permute([2, 0, 1])
                 orig = resize(orig).permute([1, 2, 0])
                 np_orig = orig.cpu().detach().numpy()
-                # print(np_orig.shape) # 224,224,3 now 256,256,3
-                # print(htm.shape) # 224, 224 now 224,19114,256
+                print("np_orig, htm")
+                print(np_orig.shape) # 224,224,3 now 256,256,3
+                print(htm.shape) # 224, 224 now 224,19114,256
                 visualization, heatmap = show_cam_on_image(np_orig, htm, True)
                 print("visualization, heatmap")
                 print(visualization.shape)

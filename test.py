@@ -133,8 +133,14 @@ for data_loader in data_loaders:
                 print(visualization.shape)
                 print(heatmap.shape)
                 viz = torch.from_numpy(visualization).unsqueeze(0).to(device)
+                PIL.Image.fromarray(viz[0].cpu().numpy(), 'RGB').save(
+                    roc_path + "/Neg/viz0_totensor.png")
                 PIL.Image.fromarray((viz[0].cpu().numpy() * 255).astype('uint8'), 'RGB').save(
-                    roc_path + "/Neg/firstEle_dataset.png")
+                    roc_path + "/Neg/viz0.png")
+                PIL.Image.fromarray(heatmap.cpu().numpy(), 'RGB').save(
+                    roc_path + "/Neg/heatmap0_totensor.png")
+                PIL.Image.fromarray((heatmap.cpu().numpy() * 255).astype('uint8'), 'RGB').save(
+                    roc_path + "/Neg/heatmap0.png")
                 orig = orig.unsqueeze(0)
                 print("viz, orig")
                 print(viz.shape) # [224,224,3]

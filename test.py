@@ -25,6 +25,7 @@ parser.add_argument('-m','--model_path', type=str, default='weights/blur_jpg_pro
 parser.add_argument('-b','--batch_size', type=int, default=32)
 parser.add_argument('-j','--workers', type=int, default=4, help='number of workers')
 parser.add_argument('-c','--crop', type=int, default=None, help='by default, do not crop. specify crop size')
+parser.add_argument('--default_test', action='store_true', help='default mode')
 parser.add_argument('--use_cpu', action='store_true', help='uses gpu by default, turn on to use cpu')
 parser.add_argument('--size_only', action='store_true', help='only look at sizes of images in dataset')
 
@@ -37,6 +38,9 @@ psi_1_input_path_heatmap = roc_path + '/test_heatmap/psi1/'
 
 pathlib.Path(roc_path+'/Neg/').mkdir(parents=True, exist_ok=True)
 pathlib.Path(roc_path+'/Pos/').mkdir(parents=True, exist_ok=True)
+
+pathlib.Path(psi_05_input_path_heatmap+'/Neg/').mkdir(parents=True, exist_ok=True)
+pathlib.Path(psi_05_input_path_heatmap+'/Pos/').mkdir(parents=True, exist_ok=True)
 pathlib.Path(psi_1_input_path_heatmap+'/Neg/').mkdir(parents=True, exist_ok=True)
 pathlib.Path(psi_1_input_path_heatmap+'/Pos/').mkdir(parents=True, exist_ok=True)
 mean = [0.485, 0.456, 0.406]
@@ -76,6 +80,9 @@ trans = transforms.Compose(trans_init + [
 # Dataset loader
 if(type(opt.dir)==str):
     opt.dir = [opt.dir,]
+
+if opt.default_test:
+    default_flag = True
 
 print('Loading [%i] datasets'%len(opt.dir))
 data_loaders = []
@@ -157,22 +164,23 @@ for data_loader in data_loaders:
                 #     roc_path + "/Neg/orig.png")
                 # orig_viz = torch.cat((orig, viz), 1)
                 # print(label[idx])
+                orig_heat = np.concatenate((np_orig, viz[0].cpu().numpy()), axis=0)
                 if label[idx] == 0:
-                    PIL.Image.fromarray(viz[0].cpu().numpy(), 'RGB').save(
-                        roc_path + "/Neg/{:.7f}".format(y_pred[count]) + '_' + str(count) + '_gt_' + str(y_true[count]) + '.png')
+                    PIL.Image.fromarray(orig_heat.cpu().numpy(), 'RGB').save(
+                        roc_path + "/{:.7f}".format(y_pred[count]) + '_' + str(count) + '_gt_' + str(y_true[count]) + '.png')
                 if label[idx] == 1:
-                    PIL.Image.fromarray(viz[0].cpu().numpy(), 'RGB').save(
-                        roc_path + "/Pos/{:.7f}".format(y_pred[count]) + '_' + str(count) + '_gt_' + str(y_true[count]) + '.png')
+                    PIL.Image.fromarray(orig_heat.cpu().numpy(), 'RGB').save(
+                        roc_path + "/{:.7f}".format(y_pred[count]) + '_' + str(count) + '_gt_' + str(y_true[count]) + '.png')
                 count += 1
-
+                exit(0)
 Hs, Ws = np.array(Hs), np.array(Ws)
 y_true, y_pred = np.array(y_true), np.array(y_pred)
 
 # save_roc_curve(y_true, y_pred, 0, roc_path)
 # save_roc_curve_with_threshold(y_true, y_pred, 0, roc_path)
 #
-# select_clo_far_heatmaps(heatmap_home_dir, psi_05_input_path_heatmap, args.log_name, "psi_0.5")
-# select_clo_far_heatmaps(heatmap_home_dir, psi_1_input_path_heatmap, args.log_name, "psi_1")
+# select_clo_far_heatmaps(heatmap_home_dir, psi_05_input_path_heatmap, opt.name, "psi_0.5")
+# select_clo_far_heatmaps(heatmap_home_dir, psi_1_input_path_heatmap, opt.name, "psi_1")
 print('Average sizes: [{:2.2f}+/-{:2.2f}] x [{:2.2f}+/-{:2.2f}] = [{:2.2f}+/-{:2.2f} Mpix]'.format(np.mean(Hs), np.std(Hs), np.mean(Ws), np.std(Ws), np.mean(Hs*Ws)/1e6, np.std(Hs*Ws)/1e6))
 print('Num reals: {}, Num fakes: {}'.format(np.sum(1-y_true), np.sum(y_true)))
 

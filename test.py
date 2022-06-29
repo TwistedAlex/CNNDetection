@@ -62,9 +62,9 @@ else:
     print('Not cropping')
 trans = transforms.Compose(trans_init + [
     transforms.ToTensor(),
-    transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
-])
 
+])
+# transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
 # Dataset loader
 if(type(opt.dir)==str):
     opt.dir = [opt.dir,]
@@ -123,7 +123,7 @@ for data_loader in data_loaders:
                 viz = torch.from_numpy(visualization).unsqueeze(0).to(device)
                 orig = orig.unsqueeze(0)
                 print("viz, orig")
-                print(viz.shape)
+                print(viz.shape) # [224,224,3]
                 print(orig.shape)
                 orig_viz = torch.cat((orig, viz), 1)
 

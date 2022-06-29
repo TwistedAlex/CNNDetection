@@ -122,7 +122,7 @@ for data_loader in data_loaders:
                 htm = np.uint8(heatmaps[idx][0].squeeze().cpu().detach().numpy() * 255)
                 orig = data[idx] # data[idx] target [1024, 1024, 3]
                 orig = orig.permute([1, 2, 0])
-                np_orig = orig.cpu().detach().numpy()
+                np_orig = np.uint8(orig.cpu().detach().numpy() * 255)
                 print("np_orig, htm")
                 print(np_orig.shape) # 224,224,3 now 224, 16725, 224
                 print(htm.shape) # 224, 224 now 224, 224
@@ -139,11 +139,11 @@ for data_loader in data_loaders:
 
                 if label[idx] == 0:
                     print('0')
-                    PIL.Image.fromarray((orig_viz[0].cpu().numpy() * 255).astype('uint8'), 'RGB').save(
+                    PIL.Image.fromarray(orig_viz[0].cpu().numpy(), 'RGB').save(
                         roc_path + "/Neg/{:.7f}".format(y_pred[count]) + '_' + str(count) + '_gt_' + str(y_true[count]) + '.png')
                 if label[idx] == 1:
                     print('1')
-                    PIL.Image.fromarray((orig_viz[0].cpu().numpy() * 255).astype('uint8'), 'RGB').save(
+                    PIL.Image.fromarray(orig_viz[0].cpu().numpy(), 'RGB').save(
                         roc_path + "/Pos/{:.7f}".format(y_pred[count]) + '_' + str(count) + '_gt_' + str(y_true[count]) + '.png')
                 count += 1
                 exit(0)

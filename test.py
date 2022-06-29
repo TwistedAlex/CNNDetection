@@ -139,11 +139,11 @@ for data_loader in data_loaders:
 
                 if label[idx] == 0:
                     print('0')
-                    PIL.Image.fromarray(orig_viz[0].cpu().numpy(), 'RGB').save(
+                    PIL.Image.fromarray((orig_viz[0].cpu().numpy() * 255).astype('uint8'), 'RGB').save(
                         roc_path + "/Neg/{:.7f}".format(y_pred[count]) + '_' + str(count) + '_gt_' + str(y_true[count]) + '.png')
                 if label[idx] == 1:
                     print('1')
-                    PIL.Image.fromarray(orig_viz[0].cpu().numpy(), 'RGB').save(
+                    PIL.Image.fromarray((orig_viz[0].cpu().numpy() * 255).astype('uint8'), 'RGB').save(
                         roc_path + "/Pos/{:.7f}".format(y_pred[count]) + '_' + str(count) + '_gt_' + str(y_true[count]) + '.png')
                 count += 1
                 exit(0)

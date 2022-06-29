@@ -84,7 +84,7 @@ for dir in opt.dir:
                                           shuffle=False,
                                           num_workers=opt.workers),]
 
-    PIL.Image.fromarray(dataset[0][0].cpu().numpy(), 'RGB').save(
+    PIL.Image.fromarray(dataset[0][0].permute([1, 2, 0]).cpu().numpy(), 'RGB').save(
         roc_path + "/firstEle_dataset.png")
 y_true, y_pred = [], []
 Hs, Ws = [], []

@@ -44,7 +44,6 @@ if(not opt.size_only):
     if(opt.model_path is not None):
         state_dict = torch.load(opt.model_path, map_location='cpu')
     model.load_state_dict(state_dict['model'])
-    model.eval()
     model = batch_GAIN_Deepfake(model=model, grad_layer=grad_layer, num_classes=1,
                               am_pretraining_epochs=1,
                               ex_pretraining_epochs=1,
@@ -53,7 +52,7 @@ if(not opt.size_only):
                               grad_magnitude=1)
     if(not opt.use_cpu):
         model.cuda()
-
+model.eval()
 # Transform
 trans_init = []
 if(opt.crop is not None):
@@ -97,15 +96,25 @@ for data_loader in data_loaders:
                 data = data.cuda()
 
             logits_cl, logits_am, heatmaps, masks, masked_images =  model(data, labels)
-
+            print("debug**********")
+            print(data)  # [[ [[],[]..[]], [[],[]...[]] ]]
+            print(labels) # tensor([1], device='cuda:0')
+            print(data.shape) # torch.size([1, 3, 224, 224])
+            print(labels.shape) # torch.size([1])
+            print(logits_cl.shape) # [1, 2]
+            print(logits_am.shape) # [1, 2]
+            print(heatmaps.shape) # [1, 1, 224, 224]
+            print(masks.shape) # [1, 1, 224, 224]
+            print(masked_images.shape) # [1, 3, 224, 224]
             y_pred.extend(logits_cl.sigmoid().flatten().tolist())
 
             for idx in (range(opt.batch_size)):
                 htm = np.uint8(heatmaps[0].squeeze().cpu().detach().numpy() * 255)
-                resize = Resize(size=224)
                 orig = data[0].permute([2, 0, 1])
                 orig = resize(orig).permute([1, 2, 0])
                 np_orig = orig.cpu().detach().numpy()
+                # print(np_orig.shape) # 224,224,3 now 256,256,3
+                # print(htm.shape) # 224, 224 now 224,19114,256
                 visualization, heatmap = show_cam_on_image(np_orig, htm, True)
                 viz = torch.from_numpy(visualization).unsqueeze(0)
                 orig = orig.unsqueeze(0)

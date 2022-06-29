@@ -87,7 +87,7 @@ for dir in opt.dir:
                                           num_workers=opt.workers),]
 
     PIL.Image.fromarray((dataset[1][0].permute([1, 2, 0]).cpu().numpy() * 255).astype('uint8'), 'RGB').save(
-        roc_path + "/firstEle_dataset.png")
+        roc_path + "/Neg/firstEle_dataset.png")
 y_true, y_pred = [], []
 Hs, Ws = [], []
 count = 0
@@ -133,6 +133,8 @@ for data_loader in data_loaders:
                 print(visualization.shape)
                 print(heatmap.shape)
                 viz = torch.from_numpy(visualization).unsqueeze(0).to(device)
+                PIL.Image.fromarray((viz.cpu().numpy() * 255).astype('uint8'), 'RGB').save(
+                    roc_path + "/Neg/firstEle_dataset.png")
                 orig = orig.unsqueeze(0)
                 print("viz, orig")
                 print(viz.shape) # [224,224,3]

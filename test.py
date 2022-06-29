@@ -109,16 +109,22 @@ for data_loader in data_loaders:
             y_pred.extend(logits_cl.sigmoid().flatten().tolist())
 
             for idx in (range(opt.batch_size)):
-                htm = np.uint8(heatmaps[0].squeeze().cpu().detach().numpy() * 255)
-                orig = data[0].permute([2, 0, 1])
+                htm = np.uint8(heatmaps[idx][0].squeeze().cpu().detach().numpy() * 255)
+                orig = data[idx].permute([2, 0, 1])
                 orig = resize(orig).permute([1, 2, 0])
                 np_orig = orig.cpu().detach().numpy()
                 # print(np_orig.shape) # 224,224,3 now 256,256,3
                 # print(htm.shape) # 224, 224 now 224,19114,256
                 visualization, heatmap = show_cam_on_image(np_orig, htm, True)
+                print("visualization, heatmap")
+                print(visualization.shape)
+                print(heatmap.shape)
                 viz = torch.from_numpy(visualization).unsqueeze(0)
                 orig = orig.unsqueeze(0)
-                masked_image = denorm(masked_images[0].detach().squeeze(),
+                print("viz, orig")
+                print(viz.shape)
+                print(orig.shape)
+                masked_image = denorm(masked_images[idx].detach().squeeze(),
                                       mean, std)
                 masked_image = (masked_image.squeeze().permute([1, 2, 0]).cpu().detach().numpy() * 255).round().astype(
                     np.uint8)

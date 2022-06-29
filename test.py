@@ -167,20 +167,19 @@ for data_loader in data_loaders:
                 orig_heat = np.concatenate((np_orig, viz[0].cpu().numpy()), axis=0)
                 if label[idx] == 0:
                     PIL.Image.fromarray(orig_heat, 'RGB').save(
-                        roc_path + "/{:.7f}".format(y_pred[count]) + '_' + str(count) + '_gt_' + str(y_true[count]) + '.png')
+                        roc_path + "/Neg/{:.7f}".format(y_pred[count]) + '_' + str(count) + '_gt_' + str(y_true[count]) + '.png')
                 if label[idx] == 1:
                     PIL.Image.fromarray(orig_heat, 'RGB').save(
-                        roc_path + "/{:.7f}".format(y_pred[count]) + '_' + str(count) + '_gt_' + str(y_true[count]) + '.png')
+                        roc_path + "/Pos/{:.7f}".format(y_pred[count]) + '_' + str(count) + '_gt_' + str(y_true[count]) + '.png')
                 count += 1
-                exit(0)
 Hs, Ws = np.array(Hs), np.array(Ws)
 y_true, y_pred = np.array(y_true), np.array(y_pred)
 
 # save_roc_curve(y_true, y_pred, 0, roc_path)
 # save_roc_curve_with_threshold(y_true, y_pred, 0, roc_path)
 #
-# select_clo_far_heatmaps(heatmap_home_dir, psi_05_input_path_heatmap, opt.name, "psi_0.5")
-# select_clo_far_heatmaps(heatmap_home_dir, psi_1_input_path_heatmap, opt.name, "psi_1")
+select_clo_far_heatmaps(heatmap_home_dir, psi_05_input_path_heatmap, opt.name, "psi_0.5")
+select_clo_far_heatmaps(heatmap_home_dir, psi_1_input_path_heatmap, opt.name, "psi_1")
 print('Average sizes: [{:2.2f}+/-{:2.2f}] x [{:2.2f}+/-{:2.2f}] = [{:2.2f}+/-{:2.2f} Mpix]'.format(np.mean(Hs), np.std(Hs), np.mean(Ws), np.std(Ws), np.mean(Hs*Ws)/1e6, np.std(Hs*Ws)/1e6))
 print('Num reals: {}, Num fakes: {}'.format(np.sum(1-y_true), np.sum(y_true)))
 

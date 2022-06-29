@@ -166,10 +166,10 @@ for data_loader in data_loaders:
                 # print(label[idx])
                 orig_heat = np.concatenate((np_orig, viz[0].cpu().numpy()), axis=0)
                 if label[idx] == 0:
-                    PIL.Image.fromarray(orig_heat.cpu().numpy(), 'RGB').save(
+                    PIL.Image.fromarray(orig_heat, 'RGB').save(
                         roc_path + "/{:.7f}".format(y_pred[count]) + '_' + str(count) + '_gt_' + str(y_true[count]) + '.png')
                 if label[idx] == 1:
-                    PIL.Image.fromarray(orig_heat.cpu().numpy(), 'RGB').save(
+                    PIL.Image.fromarray(orig_heat, 'RGB').save(
                         roc_path + "/{:.7f}".format(y_pred[count]) + '_' + str(count) + '_gt_' + str(y_true[count]) + '.png')
                 count += 1
                 exit(0)

@@ -149,7 +149,7 @@ if __name__ == '__main__':
                 for idx in (range(opt.batch_size)):
                     htm = np.uint8(heatmaps[idx][0].squeeze().cpu().detach().numpy() * 255)
                     orig = data[idx] # data[idx] target [1024, 1024, 3]
-                    orig = resize(orig).permute([1, 2, 0])
+                    orig = orig.permute([1, 2, 0])
                     np_orig = np.uint8(orig.cpu().detach().numpy() * 255)
                     PIL.Image.fromarray(np_orig, 'RGB').save(
                         roc_path + "/firstEle_dataset.png")

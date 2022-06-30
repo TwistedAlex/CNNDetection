@@ -37,6 +37,7 @@ parser.add_argument('-b','--batch_size', type=int, default=32)
 parser.add_argument('-j','--workers', type=int, default=4, help='number of workers')
 parser.add_argument('-c','--crop', type=int, default=None, help='by default, do not crop. specify crop size')
 parser.add_argument('-r','--resize', type=int, default=None, help='by default, do not resize. specify resize size')
+parser.add_argument('-o', '--output_heatmap', action='store_true', help='default not output')
 parser.add_argument('--default_test', action='store_true', help='default mode')
 parser.add_argument('--use_cpu', action='store_true', help='uses gpu by default, turn on to use cpu')
 parser.add_argument('--size_only', action='store_true', help='only look at sizes of images in dataset')
@@ -191,12 +192,13 @@ if __name__ == '__main__':
                     # orig_viz = torch.cat((orig, viz), 1)
                     # print(label[idx])
                     orig_heat = np.concatenate((np_orig, viz[0].cpu().numpy()), axis=0)
-                    if label[idx] == 0:
-                        PIL.Image.fromarray(orig_heat, 'RGB').save(
-                            htm_path + "/Neg/{:.7f}".format(y_pred[count]) + '_' + str(count) + '_gt_' + str(y_true[count]) + '.png')
-                    if label[idx] == 1:
-                        PIL.Image.fromarray(orig_heat, 'RGB').save(
-                            htm_path + "/Pos/{:.7f}".format(y_pred[count]) + '_' + str(count) + '_gt_' + str(y_true[count]) + '.png')
+                    if not opt.output_heatmap:
+                        if label[idx] == 0:
+                            PIL.Image.fromarray(orig_heat, 'RGB').save(
+                                htm_path + "/Neg/{:.7f}".format(y_pred[count]) + '_' + str(count) + '_gt_' + str(y_true[count]) + '.png')
+                        if label[idx] == 1:
+                            PIL.Image.fromarray(orig_heat, 'RGB').save(
+                                htm_path + "/Pos/{:.7f}".format(y_pred[count]) + '_' + str(count) + '_gt_' + str(y_true[count]) + '.png')
                     count += 1
 
         Hs, Ws = np.array(Hs), np.array(Ws)
@@ -215,7 +217,7 @@ if __name__ == '__main__':
             ap = average_precision_score(y_true, y_pred)
 
             print('AP: {:2.2f}, Acc: {:2.2f}, Acc (real): {:2.2f}, Acc (fake): {:2.2f}'.format(ap*100., acc*100., r_acc*100., f_acc*100.))
-            with open(roc_path + 'test_res.txt', 'w') as f:
+            with open(roc_path + f'{mode}test_res.txt', 'w') as f:
                 f.write(mode + ': AP: {:2.2f}, Acc: {:2.2f}, Acc (real): {:2.2f}, Acc (fake): {:2.2f}'.format(ap*100., acc*100., r_acc*100., f_acc*100.))
     select_clo_far_heatmaps(heatmap_home_dir, psi_05_input_path_heatmap, opt.name, "psi_0.5")
     select_clo_far_heatmaps(heatmap_home_dir, psi_1_input_path_heatmap, opt.name, "psi_1")

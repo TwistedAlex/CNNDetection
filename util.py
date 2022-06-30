@@ -112,10 +112,10 @@ def select_clo_far_heatmaps(heatmap_home_dir, input_path_heatmap, log_name, mode
     input_path_heatmap_pos = input_path_heatmap + "/Pos/"
     input_path_heatmap_neg = input_path_heatmap + "/Neg/"
     heatmap_home_dir = heatmap_home_dir + f"{datetime.now().strftime('%Y%m%d')}_heatmap_output_" + log_name + "/" + mode
-    output_path_heatmap_pos_cl = heatmap_home_dir + "/pos_fake_0/" + "/50_closest/"
-    output_path_heatmap_pos_fa = heatmap_home_dir + "/pos_fake_0/" + "/50_farthest/"
-    output_path_heatmap_neg_cl = heatmap_home_dir + "/neg_real_1/" + "/50_closest/"
-    output_path_heatmap_neg_fa = heatmap_home_dir + "/neg_real_1/" + "/50_farthest/"
+    output_path_heatmap_pos_cl = heatmap_home_dir + "/pos_fake_1/" + "/50_closest/"
+    output_path_heatmap_pos_fa = heatmap_home_dir + "/pos_fake_1/" + "/50_farthest/"
+    output_path_heatmap_neg_cl = heatmap_home_dir + "/neg_real_0/" + "/50_closest/"
+    output_path_heatmap_neg_fa = heatmap_home_dir + "/neg_real_0/" + "/50_farthest/"
     pathlib.Path(output_path_heatmap_pos_cl).mkdir(parents=True, exist_ok=True)
     pathlib.Path(output_path_heatmap_pos_fa).mkdir(parents=True, exist_ok=True)
     pathlib.Path(output_path_heatmap_neg_cl).mkdir(parents=True, exist_ok=True)

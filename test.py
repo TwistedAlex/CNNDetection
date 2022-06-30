@@ -44,8 +44,8 @@ if __name__ == '__main__':
     psi_05_input_path_heatmap = roc_path + '/test_heatmap/psi0.5/'
     psi_1_input_path_heatmap = roc_path + '/test_heatmap/psi1/'
 
-    pathlib.Path(roc_path+'/Neg/').mkdir(parents=True, exist_ok=True)
-    pathlib.Path(roc_path+'/Pos/').mkdir(parents=True, exist_ok=True)
+    # pathlib.Path(roc_path+'/Neg/').mkdir(parents=True, exist_ok=True)
+    # pathlib.Path(roc_path+'/Pos/').mkdir(parents=True, exist_ok=True)
 
     pathlib.Path(psi_05_input_path_heatmap+'/Neg/').mkdir(parents=True, exist_ok=True)
     pathlib.Path(psi_05_input_path_heatmap+'/Pos/').mkdir(parents=True, exist_ok=True)
@@ -76,7 +76,7 @@ if __name__ == '__main__':
     # Transform
     trans_init = []
     if(opt.crop is not None):
-        trans_init = [transforms.CenterCrop(opt.crop),]
+        # trans_init = [transforms.CenterCrop(opt.crop),]
         print('Cropping to [%i]'%opt.crop)
     else:
         print('Not cropping')
@@ -97,10 +97,10 @@ if __name__ == '__main__':
     for dir in dirs:
         if 'psi1' in dir:
             mode = 'psi_1'
-            roc_path = psi_1_input_path_heatmap
+            htm_path = psi_1_input_path_heatmap
         else:
             mode = 'psi_0.5'
-            roc_path = psi_05_input_path_heatmap
+            htm_path = psi_05_input_path_heatmap
         print(f'Test path: {dir}')
         dataset = datasets.ImageFolder(dir, transform=trans)
         # print(type(dataset))
@@ -153,8 +153,8 @@ if __name__ == '__main__':
                     # PIL.Image.fromarray(np_orig, 'RGB').save(
                     #     roc_path + "/Neg/firstEle_dataset.png")
                     # print("np_orig, htm")
-                    # print(np_orig.shape) # 224,224,3 now 224, 16725, 224
-                    # print(htm.shape) # 224, 224 now 224, 224
+                    print(np_orig.shape) # 224,224,3 now 224, 16725, 224
+                    print(htm.shape) # 224, 224 now 224, 224
                     visualization, heatmap = show_cam_on_image(np_orig, htm, True)
                     # print("visualization, heatmap")
                     # print(visualization.shape)
@@ -180,11 +180,12 @@ if __name__ == '__main__':
                     orig_heat = np.concatenate((np_orig, viz[0].cpu().numpy()), axis=0)
                     if label[idx] == 0:
                         PIL.Image.fromarray(orig_heat, 'RGB').save(
-                            roc_path + "/Neg/{:.7f}".format(y_pred[count]) + '_' + str(count) + '_gt_' + str(y_true[count]) + '.png')
+                            htm_path + "/Neg/{:.7f}".format(y_pred[count]) + '_' + str(count) + '_gt_' + str(y_true[count]) + '.png')
                     if label[idx] == 1:
                         PIL.Image.fromarray(orig_heat, 'RGB').save(
-                            roc_path + "/Pos/{:.7f}".format(y_pred[count]) + '_' + str(count) + '_gt_' + str(y_true[count]) + '.png')
+                            htm_path + "/Pos/{:.7f}".format(y_pred[count]) + '_' + str(count) + '_gt_' + str(y_true[count]) + '.png')
                     count += 1
+                    exit(0)
         Hs, Ws = np.array(Hs), np.array(Ws)
         y_true, y_pred = np.array(y_true), np.array(y_pred)
 
@@ -203,3 +204,5 @@ if __name__ == '__main__':
             ap = average_precision_score(y_true, y_pred)
 
             print('AP: {:2.2f}, Acc: {:2.2f}, Acc (real): {:2.2f}, Acc (fake): {:2.2f}'.format(ap*100., acc*100., r_acc*100., f_acc*100.))
+            with open(roc_path + 'test_res.txt', 'w') as f:
+                f.write(mode + ': AP: {:2.2f}, Acc: {:2.2f}, Acc (real): {:2.2f}, Acc (fake): {:2.2f}'.format(ap*100., acc*100., r_acc*100., f_acc*100.))

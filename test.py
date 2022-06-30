@@ -2,7 +2,7 @@ from networks.batch_GAIN_Deepfake import batch_GAIN_Deepfake
 from networks.resnet import resnet50
 from sklearn.metrics import average_precision_score, precision_recall_curve, accuracy_score
 from torchvision.transforms import Normalize
-from torchvision.transforms import Resize
+from torchvision.transforms import Resize, RandomResizedCrop
 from torchvision.transforms import ToTensor
 from tqdm import tqdm
 from util import save_roc_curve, save_roc_curve_with_threshold
@@ -81,6 +81,7 @@ if __name__ == '__main__':
     else:
         print('Not cropping')
     trans = transforms.Compose(trans_init + [
+        RandomResizedCrop(224, scale=(0.88, 1.0), ratio=(0.999, 1.001)),
         transforms.ToTensor(), # (H x W x C) to (C x H x W), [0,255] to [0.0, 1.0]torch.FloatTensor
         transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
     ])

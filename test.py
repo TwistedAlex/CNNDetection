@@ -97,7 +97,11 @@ if __name__ == '__main__':
         transforms.ToTensor(),  # (H x W x C) to (C x H x W), [0,255] to [0.0, 1.0]torch.FloatTensor # only-1024
         # transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
     ])
-
+    trans_input = transforms.Compose(trans_init + [
+        # RandomResizedCrop(224, scale=(0.88, 1.0), ratio=(0.999, 1.001)),
+        transforms.ToTensor(),  # (H x W x C) to (C x H x W), [0,255] to [0.0, 1.0]torch.FloatTensor # only-1024
+        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+    ])
     # Dataset loader
     if(type(opt.dir)==str):
         dirs = [opt.dir,]
@@ -116,6 +120,7 @@ if __name__ == '__main__':
             htm_path = psi_05_input_path_heatmap
         print(f'Test path: {dir}')
         dataset = datasets.ImageFolder(dir, transform=trans)
+        dataset_input = datasets.ImageFolder(dir, transform=trans_input)
         # print(type(dataset))
         # print(len(dataset))
         # print(len(dataset[0]))
@@ -126,26 +131,28 @@ if __name__ == '__main__':
                                               batch_size=opt.batch_size,
                                               shuffle=False,
                                               num_workers=opt.workers)
-
+        inputdata_loader = torch.utils.data.DataLoader(dataset_input,
+                                                  batch_size=opt.batch_size,
+                                                  shuffle=False,
+                                                  num_workers=opt.workers)
         # PIL.Image.fromarray((dataset[1][0].permute([1, 2, 0]).cpu().numpy() * 255).astype('uint8'), 'RGB').save(
         #     roc_path + "/Neg/firstEle_dataset.png")
         y_true, y_pred = [], []
         Hs, Ws = [], []
         count = 0
 
-        for data, label in tqdm(data_loader):
-        # for data, label in data_loader:
-            Hs.append(data.shape[2])
-            Ws.append(data.shape[3])
+        for data, inputdata in tqdm(zip(data_loader, inputdata_loader), total=len(data_loader)):
+            Hs.append(data[0].shape[2])
+            Ws.append(data[0].shape[3])
 
-            cur_y_true = label.flatten().tolist()
+            cur_y_true = data[1].flatten().tolist()
             labels = torch.Tensor(cur_y_true).to(device).float()
             y_true.extend(cur_y_true)
             if(not opt.size_only):
                 if(not opt.use_cpu):
-                    data = data.cuda()
-
-                logits_cl, logits_am, heatmaps, masks, masked_images =  model(data, labels)
+                    data[0] = data[0].cuda()
+                    inputdata[0] = inputdata[0].cuda()
+                logits_cl, logits_am, heatmaps, masks, masked_images =  model(inputdata[0], labels)
                 # print("debug**********")
                 # print(data)  # [[ [[],[]..[]], [[],[]...[]] ]]
                 # print(labels) # tensor([1], device='cuda:0')
@@ -160,7 +167,7 @@ if __name__ == '__main__':
 
                 for idx in (range(opt.batch_size)):
                     htm = np.uint8(heatmaps[idx][0].squeeze().cpu().detach().numpy() * 255)
-                    orig = data[idx] # data[idx] target [1024, 1024, 3]
+                    orig = data[0][idx] # data[idx] target [1024, 1024, 3]
                     orig = orig.permute([1, 2, 0])
                     np_orig = np.uint8(orig.cpu().detach().numpy() * 255)
                     # PIL.Image.fromarray(np_orig, 'RGB').save(
@@ -193,10 +200,10 @@ if __name__ == '__main__':
                     # print(label[idx])
                     orig_heat = np.concatenate((np_orig, viz[0].cpu().numpy()), axis=0)
                     if not opt.output_heatmap:
-                        if label[idx] == 0:
+                        if data[0][idx] == 0:
                             PIL.Image.fromarray(orig_heat, 'RGB').save(
                                 htm_path + "/Neg/{:.7f}".format(y_pred[count]) + '_' + str(count) + '_gt_' + str(y_true[count]) + '.png')
-                        if label[idx] == 1:
+                        if data[0][idx] == 1:
                             PIL.Image.fromarray(orig_heat, 'RGB').save(
                                 htm_path + "/Pos/{:.7f}".format(y_pred[count]) + '_' + str(count) + '_gt_' + str(y_true[count]) + '.png')
                     count += 1

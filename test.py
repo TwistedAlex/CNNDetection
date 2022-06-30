@@ -76,7 +76,7 @@ if __name__ == '__main__':
     # Transform
     trans_init = []
     if(opt.crop is not None):
-        # trans_init = [transforms.CenterCrop(opt.crop),]
+        trans_init = [transforms.CenterCrop(opt.crop),]
         print('Cropping to [%i]'%opt.crop)
     else:
         print('Not cropping')
@@ -148,13 +148,13 @@ if __name__ == '__main__':
                 for idx in (range(opt.batch_size)):
                     htm = np.uint8(heatmaps[idx][0].squeeze().cpu().detach().numpy() * 255)
                     orig = data[idx] # data[idx] target [1024, 1024, 3]
-                    orig = orig.permute([1, 2, 0])
+                    orig = resize(orig).permute([1, 2, 0])
                     np_orig = np.uint8(orig.cpu().detach().numpy() * 255)
                     # PIL.Image.fromarray(np_orig, 'RGB').save(
                     #     roc_path + "/Neg/firstEle_dataset.png")
                     # print("np_orig, htm")
-                    # print(np_orig.shape) # 224,224,3 now 224, 16725, 224
-                    # print(htm.shape) # 224, 224 now 224, 224
+                    print(np_orig.shape) # 224,224,3 now 224, 16725, 224
+                    print(htm.shape) # 224, 224 now 224, 224
                     visualization, heatmap = show_cam_on_image(np_orig, htm, True)
                     # print("visualization, heatmap")
                     # print(visualization.shape)
@@ -185,6 +185,7 @@ if __name__ == '__main__':
                         PIL.Image.fromarray(orig_heat, 'RGB').save(
                             roc_path + "/Pos/{:.7f}".format(y_pred[count]) + '_' + str(count) + '_gt_' + str(y_true[count]) + '.png')
                     count += 1
+                    exit(0)
         Hs, Ws = np.array(Hs), np.array(Ws)
         y_true, y_pred = np.array(y_true), np.array(y_pred)
 

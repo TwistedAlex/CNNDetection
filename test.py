@@ -22,6 +22,7 @@ import torchvision.transforms as transforms
 def test_output_heatmap(model, dir):
     pass
 
+
 parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 parser.add_argument('-d','--dir', nargs='+', type=str, default='examples/realfakedir')
 parser.add_argument('-n','--name', type=str, default='blur_jpg_prob0.5')
@@ -96,9 +97,10 @@ if __name__ == '__main__':
     for dir in dirs:
         if 'psi1' in dir:
             mode = 'psi_1'
+            roc_path = psi_1_input_path_heatmap
         else:
             mode = 'psi_0.5'
-
+            roc_path = psi_05_input_path_heatmap
         print(f'Test path: {dir}')
         dataset = datasets.ImageFolder(dir, transform=trans)
         # print(type(dataset))
@@ -178,10 +180,10 @@ if __name__ == '__main__':
                     orig_heat = np.concatenate((np_orig, viz[0].cpu().numpy()), axis=0)
                     if label[idx] == 0:
                         PIL.Image.fromarray(orig_heat, 'RGB').save(
-                            roc_path + f"/test_heatmap/{mode}" + "/Neg/{:.7f}".format(y_pred[count]) + '_' + str(count) + '_gt_' + str(y_true[count]) + '.png')
+                            roc_path + "/Neg/{:.7f}".format(y_pred[count]) + '_' + str(count) + '_gt_' + str(y_true[count]) + '.png')
                     if label[idx] == 1:
                         PIL.Image.fromarray(orig_heat, 'RGB').save(
-                            roc_path + f"/test_heatmap/{mode}" + "/Pos/{:.7f}".format(y_pred[count]) + '_' + str(count) + '_gt_' + str(y_true[count]) + '.png')
+                            roc_path + "/Pos/{:.7f}".format(y_pred[count]) + '_' + str(count) + '_gt_' + str(y_true[count]) + '.png')
                     count += 1
         Hs, Ws = np.array(Hs), np.array(Ws)
         y_true, y_pred = np.array(y_true), np.array(y_pred)

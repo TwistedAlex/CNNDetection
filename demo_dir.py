@@ -7,14 +7,10 @@ import csv
 import pathlib
 import numpy as np
 import os
-import PIL.Image
 import torch
 import torch.utils.data
 import torchvision.datasets as datasets
 import torchvision.transforms as transforms
-from pytorch_grad_cam import GradCAM, ScoreCAM, GradCAMPlusPlus, AblationCAM, XGradCAM, EigenCAM, FullGrad
-from pytorch_grad_cam.utils.model_targets import ClassifierOutputTarget
-from pytorch_grad_cam.utils.image import show_cam_on_image
 
 parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 parser.add_argument('-d','--dir', nargs='+', type=str, default='examples/realfakedir')
@@ -27,9 +23,6 @@ parser.add_argument('--use_cpu', action='store_true', help='uses gpu by default,
 parser.add_argument('--size_only', action='store_true', help='only look at sizes of images in dataset')
 
 opt = parser.parse_args()
-roc_path = 'checkpoints/test/'+ opt.name + '/'
-pathlib.Path(roc_path+'/Neg/').mkdir(parents=True, exist_ok=True)
-pathlib.Path(roc_path+'/Pos/').mkdir(parents=True, exist_ok=True)
 
 # Load model
 if(not opt.size_only):
@@ -41,10 +34,6 @@ if(not opt.size_only):
   if(not opt.use_cpu):
       model.cuda()
 
-target_layers = [model.layer4[-1]]
-cam = GradCAM(model=model, target_layers=target_layers, use_cuda=True)
-
-
 # Transform
 trans_init = []
 if(opt.crop is not None):
@@ -55,10 +44,6 @@ else:
 trans = transforms.Compose(trans_init + [
     transforms.ToTensor(),
     transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
-])
-
-trans = transforms.Compose([
-    transforms.ToTensor()
 ])
 
 # Dataset loader
@@ -74,48 +59,25 @@ for dir in opt.dir:
                                           shuffle=False,
                                           num_workers=opt.workers),]
 
-y_true, y_pred, cur_y_true, cur_y_pred = [], [], [], []
+y_true, y_pred = [], []
 Hs, Ws = [], []
-count = 0
-
-for data_loader in data_loaders:
+with torch.no_grad():
+  for data_loader in data_loaders:
     for data, label in tqdm(data_loader):
     # for data, label in data_loader:
-        Hs.append(data.shape[2])
-        Ws.append(data.shape[3])
+      Hs.append(data.shape[2])
+      Ws.append(data.shape[3])
 
-        cur_y_true = label.flatten().tolist()
-        y_true.extend(label.flatten().tolist())
-        if(not opt.size_only):
-            if(not opt.use_cpu):
-                data = data.cuda()
-            cur_y_pred = model(data).sigmoid().flatten().tolist()
-            y_pred.extend(model(data).sigmoid().flatten().tolist())
-        grayscale_cam = cam(input_tensor=data, targets=None)
-        print(data.shape)
-        for idx in (range(grayscale_cam.shape[0])):
-            grayscale_cam = grayscale_cam[idx, :]
-            print(data[idx].shape)
-            visualization = show_cam_on_image(np.float32(data[idx].permute([1, 2, 0]).cpu().numpy()) / 255, grayscale_cam, use_rgb=True)
-            PIL.Image.fromarray(data[idx].permute([1, 2, 0]).cpu().numpy(), 'RGB').save(
-                roc_path + "/Neg/img.png")
-            PIL.Image.fromarray(grayscale_cam, 'RGB').save(
-                roc_path + "/Neg/heatmap.png")
-            PIL.Image.fromarray(np.float32(data[idx].permute([1, 2, 0]).cpu().numpy()) / 255, 'RGB').save(
-                roc_path + "/Neg/img3.png")
-            if label[idx] == 0:
-                print('0')
-                PIL.Image.fromarray(visualization, 'RGB').save(
-                    roc_path + "/Neg/{:.7f}".format(y_pred[idx]) + '_' + str(count) + '_gt_' + str(y_true[idx]) + '.png')
-            if label[idx] == 1:
-                print('1')
-                PIL.Image.fromarray(visualization, 'RGB').save(
-                    roc_path + "/Pos/{:.7f}".format(y_pred[idx]) + '_' + str(count) + '_gt_' + str(y_true[idx]) + '.png')
-            exit(0)
-            count += 1
+      y_true.extend(label.flatten().tolist())
+      if(not opt.size_only):
+        if(not opt.use_cpu):
+            data = data.cuda()
+        y_pred.extend(model(data).sigmoid().flatten().tolist())
+
 Hs, Ws = np.array(Hs), np.array(Ws)
 y_true, y_pred = np.array(y_true), np.array(y_pred)
-
+roc_path = 'checkpoints/test/'+ opt.name + '/'
+pathlib.Path(roc_path).mkdir(parents=True, exist_ok=True)
 save_roc_curve(y_true, y_pred, 0, roc_path)
 save_roc_curve_with_threshold(y_true, y_pred, 0, roc_path)
 

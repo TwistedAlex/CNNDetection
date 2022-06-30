@@ -219,5 +219,6 @@ if __name__ == '__main__':
             print('AP: {:2.2f}, Acc: {:2.2f}, Acc (real): {:2.2f}, Acc (fake): {:2.2f}'.format(ap*100., acc*100., r_acc*100., f_acc*100.))
             with open(roc_path + f'{mode}test_res.txt', 'w') as f:
                 f.write(mode + ': AP: {:2.2f}, Acc: {:2.2f}, Acc (real): {:2.2f}, Acc (fake): {:2.2f}'.format(ap*100., acc*100., r_acc*100., f_acc*100.))
-    select_clo_far_heatmaps(heatmap_home_dir, psi_05_input_path_heatmap, opt.name, "psi_0.5")
-    select_clo_far_heatmaps(heatmap_home_dir, psi_1_input_path_heatmap, opt.name, "psi_1")
+    if not opt.output_heatmap:
+        select_clo_far_heatmaps(heatmap_home_dir, psi_05_input_path_heatmap, opt.name, "psi_0.5")
+        select_clo_far_heatmaps(heatmap_home_dir, psi_1_input_path_heatmap, opt.name, "psi_1")

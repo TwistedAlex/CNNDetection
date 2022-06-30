@@ -76,7 +76,7 @@ if __name__ == '__main__':
     # Transform
     trans_init = []
     if(opt.crop is not None):
-        # trans_init = [transforms.CenterCrop(opt.crop),]
+        trans_init = [transforms.CenterCrop(opt.crop),]
         print('Cropping to [%i]'%opt.crop)
     else:
         print('Not cropping')
@@ -84,7 +84,7 @@ if __name__ == '__main__':
         # RandomResizedCrop(224, scale=(0.88, 1.0), ratio=(0.999, 1.001)),
         transforms.ToTensor(), # (H x W x C) to (C x H x W), [0,255] to [0.0, 1.0]torch.FloatTensor # only-1024
         # transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
-        transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5]),
+        # transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5]),
     ])
 
     # Dataset loader

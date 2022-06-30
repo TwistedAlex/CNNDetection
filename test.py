@@ -81,7 +81,7 @@ if __name__ == '__main__':
     else:
         print('Not cropping')
     trans = transforms.Compose(trans_init + [
-        RandomResizedCrop(224, scale=(0.88, 1.0), ratio=(0.999, 1.001)),
+        # RandomResizedCrop(224, scale=(0.88, 1.0), ratio=(0.999, 1.001)),
         transforms.ToTensor(), # (H x W x C) to (C x H x W), [0,255] to [0.0, 1.0]torch.FloatTensor
         transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
     ])

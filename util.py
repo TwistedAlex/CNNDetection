@@ -91,6 +91,7 @@ def roc_curve(labels, preds, thresholds_count=10000):
     false_positive_rate, true_positive_rate = np.asarray(false_positive_rate), np.asarray(true_positive_rate)
     return false_positive_rate, true_positive_rate, auc, thresholds
 
+
 def show_cam_on_image(img: np.ndarray, mask: np.ndarray, without_norm : bool) -> np.ndarray:
     heatmap = cv2.applyColorMap(np.uint8(mask), cv2.COLORMAP_JET)
     heatmap = cv2.cvtColor(heatmap, cv2.COLOR_BGR2RGB)
@@ -111,10 +112,10 @@ def select_clo_far_heatmaps(heatmap_home_dir, input_path_heatmap, log_name, mode
     input_path_heatmap_pos = input_path_heatmap + "/Pos/"
     input_path_heatmap_neg = input_path_heatmap + "/Neg/"
     heatmap_home_dir = heatmap_home_dir + f"{datetime.now().strftime('%Y%m%d')}_heatmap_output_" + log_name + "/" + mode
-    output_path_heatmap_pos_cl = heatmap_home_dir + "/Pos_Fake_0/" + "/50_closest/"
-    output_path_heatmap_pos_fa = heatmap_home_dir + "/Pos_Fake_0/" + "/50_farthest/"
-    output_path_heatmap_neg_cl = heatmap_home_dir + "/Neg_Real_1/" + "/50_closest/"
-    output_path_heatmap_neg_fa = heatmap_home_dir + "/Neg_Real_1/" + "/50_farthest/"
+    output_path_heatmap_pos_cl = heatmap_home_dir + "/pos_fake_0/" + "/50_closest/"
+    output_path_heatmap_pos_fa = heatmap_home_dir + "/pos_fake_0/" + "/50_farthest/"
+    output_path_heatmap_neg_cl = heatmap_home_dir + "/neg_real_1/" + "/50_closest/"
+    output_path_heatmap_neg_fa = heatmap_home_dir + "/neg_real_1/" + "/50_farthest/"
     pathlib.Path(output_path_heatmap_pos_cl).mkdir(parents=True, exist_ok=True)
     pathlib.Path(output_path_heatmap_pos_fa).mkdir(parents=True, exist_ok=True)
     pathlib.Path(output_path_heatmap_neg_cl).mkdir(parents=True, exist_ok=True)
@@ -131,7 +132,6 @@ def select_clo_far_heatmaps(heatmap_home_dir, input_path_heatmap, log_name, mode
     for file in pos_heatmaps[-50:]:
         command = 'cp ' + input_path_heatmap_pos + file + ' ' + output_path_heatmap_pos_fa
         os.system(command)
-
     for file in neg_heatmaps[0:50]:
         command = 'cp ' + input_path_heatmap_neg + file + ' ' + output_path_heatmap_neg_fa
         os.system(command)

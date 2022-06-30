@@ -126,15 +126,15 @@ def select_clo_far_heatmaps(heatmap_home_dir, input_path_heatmap, log_name, mode
     pos_heatmaps.sort()
     neg_heatmaps.sort()
 
-    for file in pos_heatmaps[0:50]:
+    for file in pos_heatmaps[-50:]:
         command = 'cp ' + input_path_heatmap_pos + file + ' ' + output_path_heatmap_pos_cl
         os.system(command)
-    for file in pos_heatmaps[-50:]:
+    for file in pos_heatmaps[0:50]:
         command = 'cp ' + input_path_heatmap_pos + file + ' ' + output_path_heatmap_pos_fa
         os.system(command)
-    for file in neg_heatmaps[0:50]:
+    for file in neg_heatmaps[-50:]:
         command = 'cp ' + input_path_heatmap_neg + file + ' ' + output_path_heatmap_neg_fa
         os.system(command)
-    for file in neg_heatmaps[-50:]:
+    for file in neg_heatmaps[0:50]:
         command = 'cp ' + input_path_heatmap_neg + file + ' ' + output_path_heatmap_neg_cl
         os.system(command)

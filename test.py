@@ -153,8 +153,8 @@ if __name__ == '__main__':
                     # PIL.Image.fromarray(np_orig, 'RGB').save(
                     #     roc_path + "/Neg/firstEle_dataset.png")
                     # print("np_orig, htm")
-                    print(np_orig.shape) # 224,224,3 now 224, 16725, 224
-                    print(htm.shape) # 224, 224 now 224, 224
+                    # print(np_orig.shape) # 224,224,3 now 224, 16725, 224
+                    # print(htm.shape) # 224, 224 now 224, 224
                     visualization, heatmap = show_cam_on_image(np_orig, htm, True)
                     # print("visualization, heatmap")
                     # print(visualization.shape)

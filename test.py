@@ -17,6 +17,12 @@ import torch
 import torch.utils.data
 import torchvision.datasets as datasets
 import torchvision.transforms as transforms
+import torchvision.transforms.functional as TF
+from PIL import Image
+
+
+def custom_resize(img, opt):
+    return TF.resize(img, opt.resize, interpolation=Image.BILINEAR)
 
 
 def test_output_heatmap(model, dir):
@@ -30,6 +36,7 @@ parser.add_argument('-m','--model_path', type=str, default='weights/blur_jpg_pro
 parser.add_argument('-b','--batch_size', type=int, default=32)
 parser.add_argument('-j','--workers', type=int, default=4, help='number of workers')
 parser.add_argument('-c','--crop', type=int, default=None, help='by default, do not crop. specify crop size')
+parser.add_argument('-c','--resize', type=int, default=None, help='by default, do not resize. specify resize size')
 parser.add_argument('--default_test', action='store_true', help='default mode')
 parser.add_argument('--use_cpu', action='store_true', help='uses gpu by default, turn on to use cpu')
 parser.add_argument('--size_only', action='store_true', help='only look at sizes of images in dataset')
@@ -75,16 +82,19 @@ if __name__ == '__main__':
     model.eval()
     # Transform
     trans_init = []
+
+    if opt.resize is not None:
+        trans_init += [transforms.Lambda(lambda img: custom_resize(img, opt))]
     if(opt.crop is not None):
-        # trans_init = [transforms.CenterCrop(opt.crop),] # +ToTensor(): center-crop224
+        trans_init += [transforms.CenterCrop(opt.crop),] # +ToTensor(): center-crop224
         print('Cropping to [%i]'%opt.crop)
     else:
         print('Not cropping')
+
     trans = transforms.Compose(trans_init + [
-        RandomResizedCrop(224, scale=(0.88, 1.0), ratio=(0.999, 1.001)),
-        transforms.ToTensor(), # (H x W x C) to (C x H x W), [0,255] to [0.0, 1.0]torch.FloatTensor # only-1024
+        # RandomResizedCrop(224, scale=(0.88, 1.0), ratio=(0.999, 1.001)),
+        transforms.ToTensor(),  # (H x W x C) to (C x H x W), [0,255] to [0.0, 1.0]torch.FloatTensor # only-1024
         # transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
-        # transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5]),
     ])
 
     # Dataset loader

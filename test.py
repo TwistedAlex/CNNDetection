@@ -83,7 +83,7 @@ if __name__ == '__main__':
     trans = transforms.Compose(trans_init + [
         # RandomResizedCrop(224, scale=(0.88, 1.0), ratio=(0.999, 1.001)),
         transforms.ToTensor(), # (H x W x C) to (C x H x W), [0,255] to [0.0, 1.0]torch.FloatTensor
-        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+        # transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
     ])
 
     # Dataset loader
@@ -156,6 +156,7 @@ if __name__ == '__main__':
                     # print("np_orig, htm")
                     print(np_orig.shape) # 224,224,3 now 224, 16725, 224
                     print(htm.shape) # 224, 224 now 224, 224
+                    exit(0)
                     visualization, heatmap = show_cam_on_image(np_orig, htm, True)
                     # print("visualization, heatmap")
                     # print(visualization.shape)

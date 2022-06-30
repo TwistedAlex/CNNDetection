@@ -11,6 +11,7 @@ import torch
 import torch.utils.data
 import torchvision.datasets as datasets
 import torchvision.transforms as transforms
+import PIL.Image
 
 parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 parser.add_argument('-d','--dir', nargs='+', type=str, default='examples/realfakedir')
@@ -23,7 +24,8 @@ parser.add_argument('--use_cpu', action='store_true', help='uses gpu by default,
 parser.add_argument('--size_only', action='store_true', help='only look at sizes of images in dataset')
 
 opt = parser.parse_args()
-
+roc_path = 'checkpoints/test/'+ opt.name + '/'
+pathlib.Path(roc_path).mkdir(parents=True, exist_ok=True)
 # Load model
 if(not opt.size_only):
   model = resnet50(num_classes=1)
@@ -67,7 +69,12 @@ with torch.no_grad():
     # for data, label in data_loader:
       Hs.append(data.shape[2])
       Ws.append(data.shape[3])
-
+      orig = data[0]  # data[idx] target [1024, 1024, 3]
+      orig = orig.permute([1, 2, 0])
+      np_orig = np.uint8(orig.cpu().detach().numpy() * 255)
+      PIL.Image.fromarray(np_orig, 'RGB').save(
+          roc_path + "/firstEle_dataset.png")
+      exit(0)
       y_true.extend(label.flatten().tolist())
       if(not opt.size_only):
         if(not opt.use_cpu):
@@ -76,8 +83,7 @@ with torch.no_grad():
 
 Hs, Ws = np.array(Hs), np.array(Ws)
 y_true, y_pred = np.array(y_true), np.array(y_pred)
-roc_path = 'checkpoints/test/'+ opt.name + '/'
-pathlib.Path(roc_path).mkdir(parents=True, exist_ok=True)
+
 save_roc_curve(y_true, y_pred, 0, roc_path)
 save_roc_curve_with_threshold(y_true, y_pred, 0, roc_path)
 

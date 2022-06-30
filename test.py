@@ -144,11 +144,7 @@ if __name__ == '__main__':
         for data, inputdata in tqdm(zip(data_loader, inputdata_loader), total=len(data_loader)):
             Hs.append(data[0].shape[2])
             Ws.append(data[0].shape[3])
-            print(type(data))
-            print(type(inputdata))
-            print(data[0].shape)
-            print(data[1].shape)
-            exit(0)
+
             cur_y_true = data[1].flatten().tolist()
             labels = torch.Tensor(cur_y_true).to(device).float()
             y_true.extend(cur_y_true)
@@ -204,10 +200,10 @@ if __name__ == '__main__':
                     # print(label[idx])
                     orig_heat = np.concatenate((np_orig, viz[0].cpu().numpy()), axis=0)
                     if not opt.output_heatmap:
-                        if data[0][idx] == 0:
+                        if data[1][idx] == 0:
                             PIL.Image.fromarray(orig_heat, 'RGB').save(
                                 htm_path + "/Neg/{:.7f}".format(y_pred[count]) + '_' + str(count) + '_gt_' + str(y_true[count]) + '.png')
-                        if data[0][idx] == 1:
+                        if data[1][idx] == 1:
                             PIL.Image.fromarray(orig_heat, 'RGB').save(
                                 htm_path + "/Pos/{:.7f}".format(y_pred[count]) + '_' + str(count) + '_gt_' + str(y_true[count]) + '.png')
                     count += 1

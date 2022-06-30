@@ -36,7 +36,7 @@ parser.add_argument('-m','--model_path', type=str, default='weights/blur_jpg_pro
 parser.add_argument('-b','--batch_size', type=int, default=32)
 parser.add_argument('-j','--workers', type=int, default=4, help='number of workers')
 parser.add_argument('-c','--crop', type=int, default=None, help='by default, do not crop. specify crop size')
-parser.add_argument('-c','--resize', type=int, default=None, help='by default, do not resize. specify resize size')
+parser.add_argument('-r','--resize', type=int, default=None, help='by default, do not resize. specify resize size')
 parser.add_argument('--default_test', action='store_true', help='default mode')
 parser.add_argument('--use_cpu', action='store_true', help='uses gpu by default, turn on to use cpu')
 parser.add_argument('--size_only', action='store_true', help='only look at sizes of images in dataset')

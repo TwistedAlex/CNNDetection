@@ -163,11 +163,11 @@ if __name__ == '__main__':
                     orig = data[idx] # data[idx] target [1024, 1024, 3]
                     orig = orig.permute([1, 2, 0])
                     np_orig = np.uint8(orig.cpu().detach().numpy() * 255)
-                    PIL.Image.fromarray(np_orig, 'RGB').save(
-                        roc_path + "/firstEle_dataset.png")
+                    # PIL.Image.fromarray(np_orig, 'RGB').save(
+                    #     roc_path + "/firstEle_dataset.png")
                     # print("np_orig, htm")
-                    print(np_orig.shape) # 224,224,3 now 224, 16725, 224
-                    print(htm.shape) # 224, 224 now 224, 224
+                    # print(np_orig.shape) # 224,224,3 now 224, 16725, 224
+                    # print(htm.shape) # 224, 224 now 224, 224
 
                     visualization, heatmap = show_cam_on_image(np_orig, htm, True)
                     # print("visualization, heatmap")

@@ -198,7 +198,7 @@ if __name__ == '__main__':
                         PIL.Image.fromarray(orig_heat, 'RGB').save(
                             htm_path + "/Pos/{:.7f}".format(y_pred[count]) + '_' + str(count) + '_gt_' + str(y_true[count]) + '.png')
                     count += 1
-                    exit(0)
+
         Hs, Ws = np.array(Hs), np.array(Ws)
         y_true, y_pred = np.array(y_true), np.array(y_pred)
 

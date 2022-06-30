@@ -144,7 +144,11 @@ if __name__ == '__main__':
         for data, inputdata in tqdm(zip(data_loader, inputdata_loader), total=len(data_loader)):
             Hs.append(data[0].shape[2])
             Ws.append(data[0].shape[3])
-
+            print(type(data))
+            print(type(inputdata))
+            print(data[0].shape)
+            print(data[1].shape)
+            exit(0)
             cur_y_true = data[1].flatten().tolist()
             labels = torch.Tensor(cur_y_true).to(device).float()
             y_true.extend(cur_y_true)

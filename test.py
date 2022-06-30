@@ -189,11 +189,9 @@ if __name__ == '__main__':
         Hs, Ws = np.array(Hs), np.array(Ws)
         y_true, y_pred = np.array(y_true), np.array(y_pred)
 
-        # save_roc_curve(y_true, y_pred, 0, roc_path)
-        # save_roc_curve_with_threshold(y_true, y_pred, 0, roc_path)
+        save_roc_curve(y_true, y_pred, 0, htm_path)
+        save_roc_curve_with_threshold(y_true, y_pred, 0, htm_path)
 
-        select_clo_far_heatmaps(heatmap_home_dir, psi_05_input_path_heatmap, opt.name, "psi_0.5")
-        select_clo_far_heatmaps(heatmap_home_dir, psi_1_input_path_heatmap, opt.name, "psi_1")
         print('Average sizes: [{:2.2f}+/-{:2.2f}] x [{:2.2f}+/-{:2.2f}] = [{:2.2f}+/-{:2.2f} Mpix]'.format(np.mean(Hs), np.std(Hs), np.mean(Ws), np.std(Ws), np.mean(Hs*Ws)/1e6, np.std(Hs*Ws)/1e6))
         print('Num reals: {}, Num fakes: {}'.format(np.sum(1-y_true), np.sum(y_true)))
 
@@ -206,3 +204,5 @@ if __name__ == '__main__':
             print('AP: {:2.2f}, Acc: {:2.2f}, Acc (real): {:2.2f}, Acc (fake): {:2.2f}'.format(ap*100., acc*100., r_acc*100., f_acc*100.))
             with open(roc_path + 'test_res.txt', 'w') as f:
                 f.write(mode + ': AP: {:2.2f}, Acc: {:2.2f}, Acc (real): {:2.2f}, Acc (fake): {:2.2f}'.format(ap*100., acc*100., r_acc*100., f_acc*100.))
+    select_clo_far_heatmaps(heatmap_home_dir, psi_05_input_path_heatmap, opt.name, "psi_0.5")
+    select_clo_far_heatmaps(heatmap_home_dir, psi_1_input_path_heatmap, opt.name, "psi_1")

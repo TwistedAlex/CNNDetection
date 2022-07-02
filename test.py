@@ -44,6 +44,7 @@ parser.add_argument('--size_only', action='store_true', help='only look at sizes
 
 if __name__ == '__main__':
     opt = parser.parse_args()
+    default_flag = False
     device = torch.device('cuda:'+str(0))
     heatmap_home_dir = "/server_data/image-research/"
     roc_path = 'checkpoints/test/'+ opt.name + '/'

@@ -113,7 +113,9 @@ if __name__ == '__main__':
     if default_flag:
         dirs = [psi_05_test, psi_1_test]
     else:
-        dirs = [opt.dir, ]
+        for ddd in opt.dir:
+
+            dirs += [ddd, ]
     print('Loading [%i] datasets' % len(dirs))
     for dir in dirs:
         if 'psi1' in dir:

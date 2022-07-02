@@ -51,6 +51,7 @@ if __name__ == '__main__':
     psi_1_test = "dataset/test_psi1_ffhq/"
     psi_05_input_path_heatmap = roc_path + '/test_heatmap/psi0.5/'
     psi_1_input_path_heatmap = roc_path + '/test_heatmap/psi1/'
+    s3_input_path_heatmap = roc_path + '/test_heatmap/s3_r_ffhq/'
 
     # pathlib.Path(roc_path+'/Neg/').mkdir(parents=True, exist_ok=True)
     # pathlib.Path(roc_path+'/Pos/').mkdir(parents=True, exist_ok=True)
@@ -115,9 +116,12 @@ if __name__ == '__main__':
         if 'psi1' in dir:
             mode = 'psi_1'
             htm_path = psi_1_input_path_heatmap
-        else:
+        if 'psi0.5' in dir:
             mode = 'psi_0.5'
             htm_path = psi_05_input_path_heatmap
+        if 's3' in dir:
+            mode = 's3'
+            htm_path = s3_input_path_heatmap
         print(f'Test path: {dir}')
         dataset = datasets.ImageFolder(dir, transform=trans)
         dataset_input = datasets.ImageFolder(dir, transform=trans_input)
@@ -226,6 +230,8 @@ if __name__ == '__main__':
             print('AP: {:2.2f}, Acc: {:2.2f}, Acc (real): {:2.2f}, Acc (fake): {:2.2f}'.format(ap*100., acc*100., r_acc*100., f_acc*100.))
             with open(roc_path + f'{mode}test_res.txt', 'w') as f:
                 f.write(mode + ': AP: {:2.2f}, Acc: {:2.2f}, Acc (real): {:2.2f}, Acc (fake): {:2.2f}'.format(ap*100., acc*100., r_acc*100., f_acc*100.))
+        if mode == 's3' and not opt.output_heatmap:
+            select_clo_far_heatmaps(heatmap_home_dir, s3_input_path_heatmap, opt.name, "s3")
     if not opt.output_heatmap:
         select_clo_far_heatmaps(heatmap_home_dir, psi_05_input_path_heatmap, opt.name, "psi_0.5")
         select_clo_far_heatmaps(heatmap_home_dir, psi_1_input_path_heatmap, opt.name, "psi_1")

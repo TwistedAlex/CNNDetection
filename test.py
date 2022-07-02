@@ -59,6 +59,8 @@ if __name__ == '__main__':
 
     pathlib.Path(psi_05_input_path_heatmap+'/Neg/').mkdir(parents=True, exist_ok=True)
     pathlib.Path(psi_05_input_path_heatmap+'/Pos/').mkdir(parents=True, exist_ok=True)
+    pathlib.Path(s3_input_path_heatmap + '/Neg/').mkdir(parents=True, exist_ok=True)
+    pathlib.Path(s3_input_path_heatmap + '/Pos/').mkdir(parents=True, exist_ok=True)
     pathlib.Path(psi_1_input_path_heatmap+'/Neg/').mkdir(parents=True, exist_ok=True)
     pathlib.Path(psi_1_input_path_heatmap+'/Pos/').mkdir(parents=True, exist_ok=True)
     mean = [0.485, 0.456, 0.406]

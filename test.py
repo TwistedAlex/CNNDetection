@@ -125,7 +125,7 @@ if __name__ == '__main__':
         if 'psi0.5' in dir:
             mode = 'psi_0.5'
             htm_path = psi_05_input_path_heatmap
-        if 's3' in dir:
+        if 'stylegan3' in dir:
             mode = 's3'
             htm_path = s3_input_path_heatmap
         print(f'Test path: {dir}')

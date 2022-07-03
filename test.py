@@ -130,6 +130,9 @@ if __name__ == '__main__':
         if 'stylegan3' in dir:
             mode = 's3'
             htm_path = s3_input_path_heatmap
+        if 'progan/person' in dir:
+            mode = 'progan_person'
+            htm_path = roc_path + '/test_heatmap/' + mode + "/"
         print(f'Test path: {dir}')
         dataset = datasets.ImageFolder(dir, transform=trans)
         dataset_input = datasets.ImageFolder(dir, transform=trans_input)

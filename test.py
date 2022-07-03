@@ -57,12 +57,6 @@ if __name__ == '__main__':
     # pathlib.Path(roc_path+'/Neg/').mkdir(parents=True, exist_ok=True)
     # pathlib.Path(roc_path+'/Pos/').mkdir(parents=True, exist_ok=True)
 
-    pathlib.Path(psi_05_input_path_heatmap+'/Neg/').mkdir(parents=True, exist_ok=True)
-    pathlib.Path(psi_05_input_path_heatmap+'/Pos/').mkdir(parents=True, exist_ok=True)
-    pathlib.Path(s3_input_path_heatmap + '/Neg/').mkdir(parents=True, exist_ok=True)
-    pathlib.Path(s3_input_path_heatmap + '/Pos/').mkdir(parents=True, exist_ok=True)
-    pathlib.Path(psi_1_input_path_heatmap+'/Neg/').mkdir(parents=True, exist_ok=True)
-    pathlib.Path(psi_1_input_path_heatmap+'/Pos/').mkdir(parents=True, exist_ok=True)
     mean = [0.485, 0.456, 0.406]
     std = [0.229, 0.224, 0.225]
     norm = Normalize(mean=mean, std=std)
@@ -133,6 +127,8 @@ if __name__ == '__main__':
         if 'progan/person' in dir:
             mode = 'progan_person'
             htm_path = roc_path + '/test_heatmap/' + mode + "/"
+        pathlib.Path(htm_path + '/Neg/').mkdir(parents=True, exist_ok=True)
+        pathlib.Path(htm_path + '/Pos/').mkdir(parents=True, exist_ok=True)
         print(f'Test path: {dir}')
         dataset = datasets.ImageFolder(dir, transform=trans)
         dataset_input = datasets.ImageFolder(dir, transform=trans_input)

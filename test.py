@@ -127,6 +127,9 @@ if __name__ == '__main__':
         if 'progan/person' in dir:
             mode = 'progan_person'
             htm_path = roc_path + '/test_heatmap/' + mode + "/"
+        else:
+            mode = opt.name
+            htm_path = roc_path
         pathlib.Path(htm_path + '/Neg/').mkdir(parents=True, exist_ok=True)
         pathlib.Path(htm_path + '/Pos/').mkdir(parents=True, exist_ok=True)
         print(f'Test path: {dir}')
@@ -239,6 +242,9 @@ if __name__ == '__main__':
                 f.write(mode + ': AP: {:2.2f}, Acc: {:2.2f}, Acc (real): {:2.2f}, Acc (fake): {:2.2f}'.format(ap*100., acc*100., r_acc*100., f_acc*100.))
         if mode == 's3' and not opt.output_heatmap:
             select_clo_far_heatmaps(heatmap_home_dir, s3_input_path_heatmap, opt.name, "s3")
+        else:
+            if not opt.output_heatmap:
+                select_clo_far_heatmaps(heatmap_home_dir, htm_path, opt.name, opt.name)
     if not opt.output_heatmap:
         select_clo_far_heatmaps(heatmap_home_dir, psi_05_input_path_heatmap, opt.name, "psi_0.5")
         select_clo_far_heatmaps(heatmap_home_dir, psi_1_input_path_heatmap, opt.name, "psi_1")

@@ -245,6 +245,6 @@ if __name__ == '__main__':
         else:
             if not opt.output_heatmap:
                 select_clo_far_heatmaps(heatmap_home_dir, htm_path, opt.name, opt.name)
-    if not opt.output_heatmap:
+    if opt.output_heatmap:
         select_clo_far_heatmaps(heatmap_home_dir, psi_05_input_path_heatmap, opt.name, "psi_0.5")
         select_clo_far_heatmaps(heatmap_home_dir, psi_1_input_path_heatmap, opt.name, "psi_1")
